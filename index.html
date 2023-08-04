@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="game">
+            <div class="board">
+                <div class="board-title">
+                    <h1 class="text-shadow">Your board</h1>
+                </div>
+                <div class="board-game" id="player-board"></div>
+            </div>
+            <div class="board">
+                <div class="board-title">
+                    <h1 class="text-shadow">Opponent board</h1>
+                </div>
+                <div class="board-game" id="opponent-board"></div>
+            </div>
+        </div>
+        <div class="menu">
+            <div class="menu-container">
+                <div class="ships-menu">
+                    <div class="ships-title">
+                        <div class="ships-title-text">
+                            <h1 class="text-shadow">Your ships</h1>
+                            <h3 class="text-shadow">Grab and drag the ship to your board</h3>
+                        </div>
+                        <h1 class='text-shadow' id="rotate">Rotate</h1> 
+                    </div>
+                  
+                    <div class="ships-buttons">
+                        <div id="Carrier" class="ship draggable" draggable="true">CARRIER</div>
+                        <div id="Battleship" class="ship draggable" draggable="true">BATTLESHIP</div>
+                        <div id="Cruiser" class="ship draggable" draggable="true">CRUISER</div>
+                        <div id="Submarine" class="ship draggable" draggable="true">SUBMARINE</div>
+                        <div id="Destroyer" class="ship draggable" draggable="true">DESTROYER</div>
+                    </div>
+                </div>  
+                
+                <div class="game-menu">
+                        <h1 class="game-button text-shadow">Restart game</h1>
+                        <h1 class="game-button text-shadow">Start</h1>
+                </div>
+            
+            </div>
+            
+            
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

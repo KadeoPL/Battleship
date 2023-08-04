@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Oswald;
+    font-size: 10px;
+}
+
+html {
+    background: url(img/background.jpg) no-repeat center center fixed;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 100px;
+}
+
+.game {
+    display: flex;
+}
+
+.board {
+    width: 50%;
+}
+
+.board:nth-child(1){
+    margin-right: 20px;
+}
+
+
+.board-title {
+    width: 100%; 
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.menu {
+    width: 100%;
+    height: 170px;
+    display: flex;
+    background-color: rgb(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(165, 212, 255, 0.5);
+    margin-top: 20px;
+
+}
+
+h1 {
+    font-size: 2.4rem;
+    color: white;
+    text-transform: uppercase;
+}
+
+.text-shadow {
+    filter: drop-shadow(0px 1px 3px #000);
+}
+
+#player-board {
+    margin-right: 20px;
+}
+
+.menu-container {
+    width: 100%;
+    margin: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.ships-menu {
+    width: 70%;
+}
+
+.game-menu {
+    width: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.game-menu > h1:last-child {
+    margin-left: 40px;
+}
+
+.ships-title {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ships-title-text {
+    display: flex;
+    align-items: center;
+}
+
+
+.ships-title-text > h1::after {
+    content: '|';
+    margin-left: 10px;
+    margin-right: 10px;
+    color: red;
+}
+
+.ships-title-text > h3 {
+    color: white;
+    font-weight: 400; 
+    font-size: 1.3rem;
+    text-transform: uppercase;
+}
+
+.game-button {
+    background: none;
+    box-shadow: none;
+}
+
+#rotate {
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 37px;
+}
+
+.ships-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.ship {
+    background-color: #A00B0B;
+    color: white;
+    font-size: 1.6rem;
+    font-weight: 400;
+    padding: 13px 5%;
+
+}
+
+.board-game {
+    display: grid;
+    width: 100%;
+    aspect-ratio: 1/1;
+    grid-template-columns: repeat(11, 1fr);
+    grid-template-rows: repeat(11, 1fr);
+}
+
+.game-cells {
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(165, 212, 255, 0.5);
+    background-color: rgb(0, 0, 0, 0.4);
+}
+
+.game-cells:hover{
+    background-color: rgba(255, 255, 255, 0.15);
+}
+.game-label {
+    font-size: 1.2rem;
+    color: #fff;
+    display: grid;
+    place-items: center;
+}
