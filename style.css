@@ -126,6 +126,16 @@ h1 {
     font-size: 1.6rem;
     font-weight: 400;
     line-height: 37px;
+    cursor: pointer;
+    transition: scale 0.5s;
+}
+
+#rotate:hover {
+    color: #A00B0B;
+}
+
+#rotate:active {
+    scale: 1.2;
 }
 
 .ships-buttons {
@@ -141,6 +151,7 @@ h1 {
     font-size: 1.6rem;
     font-weight: 400;
     padding: 13px 5%;
+    cursor: pointer;
 
 }
 
@@ -166,4 +177,12 @@ h1 {
     color: #fff;
     display: grid;
     place-items: center;
+}
+
+.red {
+    background-color: red;
+}
+
+.green {
+    background-color: green;
 }
