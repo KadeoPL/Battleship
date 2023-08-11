@@ -50,7 +50,7 @@ function createGameBoard(boardName, arrName) {
                 boardName.appendChild(gameBoardCell);
                 gameBoardCell.dataset.x = lettersArr[x - 1];
                 gameBoardCell.dataset.y = y;
-                arrName[lettersArr[x - 1]][y] = gameBoardCell;
+                arrName[lettersArr[x - 1]][y] = { element: gameBoardCell, occupied: false };
             }
 
         }
@@ -58,43 +58,53 @@ function createGameBoard(boardName, arrName) {
 }
 
 
-function dragShip(board, shipName, currentShipSize){
-    
-    shipName.addEventListener('dragend', (event) => {
+function dragShip(board, shipName, currentShipSize) {
+    /*shipName.addEventListener('dragend', (event) => {
         shipName.classList.add('green');
-    });
+    });*/
 
     board.addEventListener('dragover', (event) => {
         event.preventDefault();
-        shipName.style.backgroundColor = 'blue'; 
-
-
     });
 
     board.addEventListener('drop', (event) => {
         event.preventDefault();
     
         if (event.target.classList.contains('game-cells')) {
-            
-            let startCell = playerBoardCells[event.target.dataset.x][event.target.dataset.y];
-            
-            for (let i = 0; i < currentShipSize; i++) {
-                if (startCell.dataset.ship === 'on'){
-                    return console.log('Pole zajete');
+            let x = event.target.dataset.x;
+            let y = event.target.dataset.y;
+            let startCell = playerBoardCells[x][y];
+    
+            if (isHorizontal && (lettersArr.indexOf(x) + currentShipSize) <= lettersArr.length) {
+                for (let i = 0; i < currentShipSize; i++) {
+                    if (startCell.occupied) {
+                        return console.log('Pole zajete');
+                    }
+                    startCell.element.style.backgroundColor = 'red';
+                    startCell.classList.add('hovered');
+                    startCell.occupied = true;
+                    startCell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + i + 1]][y];
+                    shipName.style.display = 'none';
                 }
-                if (isHorizontal) {
-                    startCell.style.backgroundColor = 'red';
-                    startCell.dataset.ship = 'on';
-                    startCell = playerBoardCells[lettersArr[lettersArr.indexOf(event.target.dataset.x) + i + 1]][event.target.dataset.y];
-                } else {
-                    startCell.style.backgroundColor = 'red';
-                    startCell.dataset.ship = 'on';
-                    startCell = playerBoardCells[lettersArr[lettersArr.indexOf(event.target.dataset.x)]][parseInt(event.target.dataset.y) + i + 1];
+            } else if (!isHorizontal && (parseInt(y) + currentShipSize) <= 11) {
+                for (let i = 0; i < currentShipSize; i++) {
+                    if (startCell.occupied) {
+                        return console.log('Pole zajete');
+                    }
+                    startCell.element.style.backgroundColor = 'red';
+                    startCell.classList.add('hovered');
+                    startCell.occupied = true;
+                    startCell = playerBoardCells[lettersArr[lettersArr.indexOf(x)]][parseInt(y) + i + 1];
+                    shipName.style.display = 'none';
                 }
+            } else {
+                console.log('Statek wychodzi poza granice planszy');
             }
+    
             currentShipSize = 0;
         }
     });
+    
 }
 
 function flipDirection(button) {
@@ -109,12 +119,41 @@ function flipDirection(button) {
     })
 }
 
+function placeShipsRandomly(arrName) {
+    shipsArr.forEach(ship => {
+        let validPlacement = false;
+
+        while (!validPlacement) {
+            const x = Math.floor(Math.random() * (lettersArr.length - ship.size + 1));
+            const y = Math.floor(Math.random() * (11 - ship.size + 1));
+
+            validPlacement = true;
+
+            for (let i = 0; i < ship.size; i++) {
+                if (arrName[lettersArr[x + i]][y].occupied) {
+                    validPlacement = false;
+                    break;
+                }
+            }
+
+            if (validPlacement) {
+                for (let i = 0; i < ship.size; i++) {
+                    arrName[lettersArr[x + i]][y].element.style.backgroundColor = 'red';
+                    arrName[lettersArr[x + i]][y].occupied = true;
+                }
+            }
+        }
+    });
+}
+
 
 createGameBoard(playerGameBoard, playerBoardCells);
 createGameBoard(opponentGameBoard, opponentBoardCells);
+placeShipsRandomly(opponentBoardCells);
 
 do {
     flipDirection(rotateButton);
+    console.log(playerBoardCells);
     shipsArr.forEach(shipName => {
         shipName.ship.addEventListener('dragstart', (event) => {
     
@@ -125,3 +164,9 @@ do {
 
 } while (gameEnd);
 
+/*
+dragstart: Rozpoczęcie przeciągania, ustawienie danych przeciągania i dostosowanie wyglądu.
+dragover: Obsługa poruszania elementem przeciąganym nad obszarem docelowym.
+drop: Reakcja na upuszczenie elementu przeciąganego na obszarze docelowym.
+dragend: Zakończenie przeciągania, przywrócenie pierwotnego wyglądu.
+*/
