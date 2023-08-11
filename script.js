@@ -81,7 +81,6 @@ function dragShip(board, shipName, currentShipSize) {
                         return console.log('Pole zajete');
                     }
                     startCell.element.style.backgroundColor = 'red';
-                    startCell.classList.add('hovered');
                     startCell.occupied = true;
                     startCell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + i + 1]][y];
                     shipName.style.display = 'none';
@@ -92,7 +91,6 @@ function dragShip(board, shipName, currentShipSize) {
                         return console.log('Pole zajete');
                     }
                     startCell.element.style.backgroundColor = 'red';
-                    startCell.classList.add('hovered');
                     startCell.occupied = true;
                     startCell = playerBoardCells[lettersArr[lettersArr.indexOf(x)]][parseInt(y) + i + 1];
                     shipName.style.display = 'none';
@@ -119,7 +117,7 @@ function flipDirection(button) {
     })
 }
 
-function placeShipsRandomly(arrName) {
+/*function placeShipsRandomly(arrName) {
     shipsArr.forEach(ship => {
         let validPlacement = false;
 
@@ -144,12 +142,12 @@ function placeShipsRandomly(arrName) {
             }
         }
     });
-}
+}*/
 
 
 createGameBoard(playerGameBoard, playerBoardCells);
 createGameBoard(opponentGameBoard, opponentBoardCells);
-placeShipsRandomly(opponentBoardCells);
+///placeShipsRandomly(opponentBoardCells);
 
 do {
     flipDirection(rotateButton);
@@ -166,7 +164,7 @@ do {
 
 /*
 dragstart: Rozpoczęcie przeciągania, ustawienie danych przeciągania i dostosowanie wyglądu.
-dragover: Obsługa poruszania elementem przeciąganym nad obszarem docelowym.
+dragover: Obsługa poruszania elementem przeciąganym nad obszarem docelowym. 
 drop: Reakcja na upuszczenie elementu przeciąganego na obszarze docelowym.
 dragend: Zakończenie przeciągania, przywrócenie pierwotnego wyglądu.
 */
