@@ -78,6 +78,7 @@ function dragShip(board, shipName, currentShipSize) {
                     if (error) {
                         console.log(error); 
                     } else {
+                        console.log(shipCells);
                         shipCells.forEach(element => {
                             element.element.style.backgroundColor = 'red';
                             element.occupied = true;
@@ -91,6 +92,7 @@ function dragShip(board, shipName, currentShipSize) {
                     if (error) {
                         console.log(error); 
                     } else {
+                        console.log(shipCells);
                         shipCells.forEach(element => {
                             element.element.style.backgroundColor = 'red';
                             element.occupied = true;
@@ -134,27 +136,31 @@ function checkAdjacentCells (x, y, isHorizontal, shipSize, letterArray, boardCel
             }
           }
     } else {
-        for (let offsetX = -1; offsetX < shipSize; offsetX++) {
-            for (let offsetY = -1; offsetY <= 1; offsetY++) {
+        for (let offsetY = -1; offsetY < shipSize; offsetY++) {
+            for (let offsetX = -1; offsetX <= 1; offsetX++) {
                 const neighborX = letterArray[letterArray.indexOf(x) + offsetX];
                 const neighborY = parseInt(y) + offsetY;
+                console.log(x, y);
+                console.log(neighborX, neighborY);
 
                 if (cell.occupied) {
                     return console.log('Pole zajęte')
                 };
 
-                if (offsetX === 1 && offsetY >= 0){
+                if (offsetY >= 0 && offsetX === 1) { 
                     adjacentCells.push(cell);
                 }
 
-                if (!boardCells[neighborY] || !boardCells[neighborX][neighborY]) continue;
+                if (!boardCells[neighborX] || !boardCells[neighborX][neighborY]) continue;
 
                 cell = boardCells[neighborX][neighborY];
             }
         }
     }
     callback(null, adjacentCells);
+    
 }
+
 
 function flipDirection(button) {
     button.addEventListener('click', () => {
