@@ -59,9 +59,6 @@ function createGameBoard(boardName, arrName) {
 
 
 function dragShip(board, shipName, currentShipSize) {
-    /*shipName.addEventListener('dragend', (event) => {
-        shipName.classList.add('green');
-    });*/
 
     board.addEventListener('dragover', (event) => {
         event.preventDefault();
@@ -90,15 +87,19 @@ function dragShip(board, shipName, currentShipSize) {
                     }
                 });
             } else if (!isHorizontal && (parseInt(y) + currentShipSize) <= 11) {
-                for (let i = 0; i < currentShipSize; i++) {
-                    if (startCell.occupied) {
-                        return console.log('Pole zajete');
+                checkAdjacentCells(x, y, false, currentShipSize, lettersArr, playerBoardCells, (error, shipCells) => {
+                    if (error) {
+                        console.log(error); 
+                    } else {
+                        shipCells.forEach(element => {
+                            element.element.style.backgroundColor = 'red';
+                            element.occupied = true;
+                            shipName.style.display = 'none';
+                        });
+                        
                     }
-                    startCell.element.style.backgroundColor = 'red';
-                    startCell.occupied = true;
-                    startCell = playerBoardCells[lettersArr[lettersArr.indexOf(x)]][parseInt(y) + i + 1];
-                    shipName.style.display = 'none';
-                }
+                });
+
             } else {
                 console.log('Statek wychodzi poza granice planszy');
             }
@@ -114,23 +115,43 @@ function checkAdjacentCells (x, y, isHorizontal, shipSize, letterArray, boardCel
     if (isHorizontal) {
         for (let offsetX = -1; offsetX < shipSize; offsetX++) {
             for (let offsetY = -1; offsetY <= 1; offsetY++) {
-              if (cell.occupied) {
-                return console.log('Pole zajęte')
-              };
 
-              if (offsetX >= 0 && offsetY === 1){
-                adjacentCells.push(cell);
-              }
-        
-              const neighborX = letterArray[letterArray.indexOf(x) + offsetX];
-              const neighborY = parseInt(y) + offsetY;
-        
-              cell = boardCells[neighborX][neighborY];
-            }
+                const neighborX = letterArray[letterArray.indexOf(x) + offsetX];
+                const neighborY = parseInt(y) + offsetY;
+              
+                if (cell.occupied) {
+                    return console.log('Pole zajęte')
+                };
+
+                if (offsetX >= 0 && offsetY === 1){
+                    adjacentCells.push(cell);
+                }
+
+                if (!boardCells[neighborX] || !boardCells[neighborX][neighborY]) continue;
             
+                cell = boardCells[neighborX][neighborY];
+              
+            }
           }
     } else {
-        
+        for (let offsetX = -1; offsetX < shipSize; offsetX++) {
+            for (let offsetY = -1; offsetY <= 1; offsetY++) {
+                const neighborX = letterArray[letterArray.indexOf(x) + offsetX];
+                const neighborY = parseInt(y) + offsetY;
+
+                if (cell.occupied) {
+                    return console.log('Pole zajęte')
+                };
+
+                if (offsetX === 1 && offsetY >= 0){
+                    adjacentCells.push(cell);
+                }
+
+                if (!boardCells[neighborY] || !boardCells[neighborX][neighborY]) continue;
+
+                cell = boardCells[neighborX][neighborY];
+            }
+        }
     }
     callback(null, adjacentCells);
 }
@@ -140,6 +161,7 @@ function flipDirection(button) {
         if (isHorizontal) {
             isHorizontal = false;
             console.log('zmiana na false');
+
         } else {
             isHorizontal = true; 
             console.log('zmiana na true');
@@ -147,91 +169,17 @@ function flipDirection(button) {
     })
 }
 
-/*function placeShipsRandomly(arrName) {
-    shipsArr.forEach(ship => {
-        let validPlacement = false;
-
-        while (!validPlacement) {
-            const x = Math.floor(Math.random() * (lettersArr.length - ship.size + 1));
-            const y = Math.floor(Math.random() * (11 - ship.size + 1));
-
-            validPlacement = true;
-
-            for (let i = 0; i < ship.size; i++) {
-                if (arrName[lettersArr[x + i]][y].occupied) {
-                    validPlacement = false;
-                    break;
-                }
-            }
-
-            if (validPlacement) {
-                for (let i = 0; i < ship.size; i++) {
-                    arrName[lettersArr[x + i]][y].element.style.backgroundColor = 'red';
-                    arrName[lettersArr[x + i]][y].occupied = true;
-                }
-            }
-        }
-    });
-}*/
-
 
 createGameBoard(playerGameBoard, playerBoardCells);
 createGameBoard(opponentGameBoard, opponentBoardCells);
-///placeShipsRandomly(opponentBoardCells);
 
 do {
-    flipDirection(rotateButton);
 
     shipsArr.forEach(shipName => {
-        shipName.ship.addEventListener('dragstart', (event) => {
-    
+        shipName.ship.addEventListener('dragstart', (event) => { 
             dragShip(playerGameBoard, shipName.ship, shipName.size);
         });
-        
     });
+    flipDirection(rotateButton);
 
 } while (gameEnd);
-
-/*
-dragstart: Rozpoczęcie przeciągania, ustawienie danych przeciągania i dostosowanie wyglądu.
-dragover: Obsługa poruszania elementem przeciąganym nad obszarem docelowym. 
-drop: Reakcja na upuszczenie elementu przeciąganego na obszarze docelowym.
-dragend: Zakończenie przeciągania, przywrócenie pierwotnego wyglądu.
-*/
-
-
-   /* board.addEventListener('drop', (event) => {
-        event.preventDefault();
-    
-        if (event.target.classList.contains('game-cells')) {
-            let x = event.target.dataset.x;
-            let y = event.target.dataset.y;
-            let startCell = playerBoardCells[x][y];
-    
-            if (isHorizontal && (lettersArr.indexOf(x) + currentShipSize) <= lettersArr.length) {
-                for (let i = 0; i < currentShipSize; i++) {
-                    if (startCell.occupied) {
-                        return console.log('Pole zajete');
-                    } 
-                    startCell.element.style.backgroundColor = 'red';
-                    startCell.occupied = true;
-                    startCell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + i + 1]][y];
-                    shipName.style.display = 'none';
-                }
-            } else if (!isHorizontal && (parseInt(y) + currentShipSize) <= 11) {
-                for (let i = 0; i < currentShipSize; i++) {
-                    if (startCell.occupied) {
-                        return console.log('Pole zajete');
-                    }
-                    startCell.element.style.backgroundColor = 'red';
-                    startCell.occupied = true;
-                    startCell = playerBoardCells[lettersArr[lettersArr.indexOf(x)]][parseInt(y) + i + 1];
-                    shipName.style.display = 'none';
-                }
-            } else {
-                console.log('Statek wychodzi poza granice planszy');
-            }
-    
-            currentShipSize = 0;
-        }
-    });*/
