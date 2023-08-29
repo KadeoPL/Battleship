@@ -120,6 +120,17 @@ h1 {
 .game-button {
     background: none;
     box-shadow: none;
+    cursor: pointer;
+    transition: scale 0.5s, color 0.2s;
+}
+
+.game-button:hover {
+    scale: 1.1;
+    color: #A00B0B;
+}
+
+.game-button:active {
+    scale: 1;
 }
 
 #rotate {

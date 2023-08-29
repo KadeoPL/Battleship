@@ -9,6 +9,8 @@ class Ship {
 const playerGameBoard = document.getElementById('player-board');
 const opponentGameBoard = document.getElementById('opponent-board');
 const rotateButton = document.getElementById('rotate');
+const startButton = document.getElementById('start-button');
+const restartButton = document.getElementById('restart-button');
 const playerBoardCells = [];
 const opponentBoardCells = [];
 const carrier = new Ship('Carrier', 5);
@@ -22,6 +24,8 @@ let gameEnd = false;
 
 const shipsArr = [carrier, battleship, cruiser, submarine, destroyer];
 const lettersArr = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+
+let shipCounter = shipsArr.length;
 
 function createGameBoard(boardName, arrName) {
     
@@ -64,44 +68,85 @@ function dragShip(board, shipName, currentShipSize) {
         event.preventDefault();
     });
 
-    board.addEventListener('dragenter', (event) => {
+    /*board.addEventListener('dragenter', (event) => {
         event.preventDefault();
         let x = event.target.dataset.x;
         let y = event.target.dataset.y;
         let cell = playerBoardCells[x][y];
-    
         
-        if (isHorizontal) {
-            for (let offsetX = 0; offsetX <= currentShipSize; offsetX++) {
-                cell.element.classList.add('hovered');
-                cell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + offsetX]][y];
-            }
-        } else {
-            for (let offsetY = 0; offsetY <= currentShipSize; offsetY++) {
-                cell.element.classList.add('hovered');
-                cell = playerBoardCells[x][parseInt(y) + offsetY];
+        if(cell.element.classList.contains('game-cells') && ((lettersArr.indexOf(x) >= 0) && (lettersArr.indexOf(x) + currentShipSize < 10) || y > 0 && (parseInt(y) + currentShipSize <= 11))){
+
+            if (isHorizontal) {
+                
+                for (let offsetX = 0; offsetX <= currentShipSize; offsetX++) {
+                     cell.element.classList.add('hovered');
+                     cell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + offsetX]][y];
+
+                }
+            } else {
+
+                for (let offsetY = 0; offsetY <= currentShipSize; offsetY++) {
+                    cell.element.classList.add('hovered');
+                    cell = playerBoardCells[x][parseInt(y) + offsetY];
+                    }
+                }
+        }
+    });*/
+
+        /*board.addEventListener('dragenter', (event) => {
+        event.preventDefault();
+        console.log(event.target);
+        if (event.target.classList.contains('game-cells')) {
+
+            let x = event.target.dataset.x;
+            let y = event.target.dataset.y;
+            let cell = playerBoardCells[x][y];
+            
+            if(((lettersArr.indexOf(x) >= 0) && (lettersArr.indexOf(x) + currentShipSize < 10) || y > 0 && (parseInt(y) + currentShipSize <= 11))){
+    
+                if (isHorizontal) {
+                    
+                    for (let offsetX = 0; offsetX <= currentShipSize; offsetX++) {
+                         cell.element.classList.add('hovered');
+                         cell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + offsetX]][y];
+    
+                    }
+                } else {
+    
+                    for (let offsetY = 0; offsetY <= currentShipSize; offsetY++) {
+                        cell.element.classList.add('hovered');
+                        cell = playerBoardCells[x][parseInt(y) + offsetY];
+                        }
+                    }
             }
         }
     });
 
+    
     board.addEventListener('dragleave', (event) => {
         event.preventDefault();
         let x = event.target.dataset.x;
         let y = event.target.dataset.y;
         let cell = playerBoardCells[x][y];
         
-        if (isHorizontal) {
-            for (let offsetX = 0; offsetX <= currentShipSize; offsetX++) {
-                cell.element.classList.remove('hovered');
-                cell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + offsetX]][y];
-            }
-        } else {
-            for (let offsetY = 0; offsetY <= currentShipSize; offsetY++) {
-                cell.element.classList.remove('hovered');
-                cell = playerBoardCells[x][parseInt(y) + offsetY];
-            }
+        if(cell.element.classList.contains('game-cells') && ((lettersArr.indexOf(x) >= 0) && (lettersArr.indexOf(x) + currentShipSize < 10) || y > 0 && (parseInt(y) + currentShipSize <= 11))){
+
+            if (isHorizontal) {
+                
+                for (let offsetX = 0; offsetX <= currentShipSize; offsetX++) {
+                     cell.element.classList.add('hovered');
+                     cell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + offsetX]][y];
+
+                }
+            } else {
+
+                for (let offsetY = 0; offsetY <= currentShipSize; offsetY++) {
+                    cell.element.classList.remove('hovered');
+                    cell = playerBoardCells[x][parseInt(y) + offsetY];
+                    }
+                }
         }
-    });
+    });*/
 
 
     board.addEventListener('drop', (event) => {
@@ -125,10 +170,12 @@ function dragShip(board, shipName, currentShipSize) {
                     if (error) {
                         console.log(error); 
                     } else {
-                        console.log(shipCells);
+                        shipCounter--;
+                        console.log(shipCounter);
                         shipCells.forEach(element => {
                             element.element.style.backgroundColor = 'red';
                             element.occupied = true;
+                            event.dataTransfer.setData('size', shipName.size); 
                             shipName.style.display = 'none';
                         });
                         
@@ -139,7 +186,8 @@ function dragShip(board, shipName, currentShipSize) {
                     if (error) {
                         console.log(error); 
                     } else {
-                        console.log(shipCells);
+                        shipCounter--;
+                        console.log(shipCounter);
                         shipCells.forEach(element => {
                             element.element.style.backgroundColor = 'red';
                             element.occupied = true;
@@ -152,7 +200,6 @@ function dragShip(board, shipName, currentShipSize) {
             } else {
                 console.log('Statek wychodzi poza granice planszy');
             }
-    
             currentShipSize = 0;
         }
 
@@ -212,7 +259,7 @@ function checkAdjacentCells (x, y, isHorizontal, shipSize, letterArray, boardCel
         }
     }
     callback(null, adjacentCells);
-    
+
 }
 
 
@@ -229,9 +276,21 @@ function flipDirection(button) {
     })
 }
 
+function startGame (button){
+    button.addEventListener('click', () => {
+        if(shipCounter === 0 ){
+            console.log('Wszystkie statki na planszy');
+        } else {
+            console.log('Nie umieszczono wszytkich statków');
+        }
+    })
+}
+
 
 createGameBoard(playerGameBoard, playerBoardCells);
 createGameBoard(opponentGameBoard, opponentBoardCells);
+console.log(shipCounter);
+
 
 do {
 
@@ -241,5 +300,6 @@ do {
         });
     });
     flipDirection(rotateButton);
+    startGame(startButton);
 
 } while (gameEnd);
