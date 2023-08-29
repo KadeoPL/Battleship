@@ -62,16 +62,63 @@ function dragShip(board, shipName, currentShipSize) {
 
     board.addEventListener('dragover', (event) => {
         event.preventDefault();
-
     });
+
+    board.addEventListener('dragenter', (event) => {
+        event.preventDefault();
+        let x = event.target.dataset.x;
+        let y = event.target.dataset.y;
+        let cell = playerBoardCells[x][y];
+    
+        
+        if (isHorizontal) {
+            for (let offsetX = 0; offsetX <= currentShipSize; offsetX++) {
+                cell.element.classList.add('hovered');
+                cell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + offsetX]][y];
+            }
+        } else {
+            for (let offsetY = 0; offsetY <= currentShipSize; offsetY++) {
+                cell.element.classList.add('hovered');
+                cell = playerBoardCells[x][parseInt(y) + offsetY];
+            }
+        }
+    });
+
+    board.addEventListener('dragleave', (event) => {
+        event.preventDefault();
+        let x = event.target.dataset.x;
+        let y = event.target.dataset.y;
+        let cell = playerBoardCells[x][y];
+        
+        if (isHorizontal) {
+            for (let offsetX = 0; offsetX <= currentShipSize; offsetX++) {
+                cell.element.classList.remove('hovered');
+                cell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + offsetX]][y];
+            }
+        } else {
+            for (let offsetY = 0; offsetY <= currentShipSize; offsetY++) {
+                cell.element.classList.remove('hovered');
+                cell = playerBoardCells[x][parseInt(y) + offsetY];
+            }
+        }
+    });
+
 
     board.addEventListener('drop', (event) => {
         event.preventDefault();
     
         if (event.target.classList.contains('game-cells')) {
+            
+            for (const letter of lettersArr) {
+                for (let y = 1; y <= 10; y++) {
+                    const cell = playerBoardCells[letter][y];
+                    cell.element.classList.remove('hovered');
+                }
+            }
+            
             let x = event.target.dataset.x;
             let y = event.target.dataset.y;
-            let startCell = playerBoardCells[x][y];
+            
     
             if (isHorizontal && (lettersArr.indexOf(x) + currentShipSize) <= lettersArr.length) {
                 checkAdjacentCells(x, y, isHorizontal, currentShipSize, lettersArr, playerBoardCells, (error, shipCells) => {
@@ -108,6 +155,15 @@ function dragShip(board, shipName, currentShipSize) {
     
             currentShipSize = 0;
         }
+
+        board.addEventListener('dragend', () => {
+            playerBoardCells.forEach(column => {
+                column.forEach(cell => {
+                    cell.element.classList.remove('hovered');
+                });
+            });
+        });
+
     });
 };    
 
@@ -115,8 +171,8 @@ function checkAdjacentCells (x, y, isHorizontal, shipSize, letterArray, boardCel
     let cell = boardCells[x][y];
     let adjacentCells = [];
     if (isHorizontal) {
-        for (let offsetX = -1; offsetX < shipSize; offsetX++) {
-            for (let offsetY = -1; offsetY <= 1; offsetY++) {
+        for (let offsetX = -1; offsetX < shipSize + 1; offsetX++) {
+            for (let offsetY = -1; offsetY <= 2; offsetY++) {
 
                 const neighborX = letterArray[letterArray.indexOf(x) + offsetX];
                 const neighborY = parseInt(y) + offsetY;
@@ -125,7 +181,7 @@ function checkAdjacentCells (x, y, isHorizontal, shipSize, letterArray, boardCel
                     return console.log('Pole zajęte')
                 };
 
-                if (offsetX >= 0 && offsetY === 1){
+                if (offsetX >= 0 && offsetX < shipSize && offsetY === 1){
                     adjacentCells.push(cell);
                 }
 
@@ -136,8 +192,8 @@ function checkAdjacentCells (x, y, isHorizontal, shipSize, letterArray, boardCel
             }
           }
     } else {
-        for (let offsetY = -1; offsetY < shipSize; offsetY++) {
-            for (let offsetX = -1; offsetX <= 1; offsetX++) {
+        for (let offsetY = -1; offsetY < shipSize + 1; offsetY++) {
+            for (let offsetX = -1; offsetX <= 2; offsetX++) {
                 const neighborX = letterArray[letterArray.indexOf(x) + offsetX];
                 const neighborY = parseInt(y) + offsetY;
 
@@ -145,7 +201,7 @@ function checkAdjacentCells (x, y, isHorizontal, shipSize, letterArray, boardCel
                     return console.log('Pole zajęte')
                 };
 
-                if (offsetY >= 0 && offsetX === 1) { 
+                if (offsetY >= 0 && offsetY < shipSize && offsetX === 1) { 
                     adjacentCells.push(cell);
                 }
 
