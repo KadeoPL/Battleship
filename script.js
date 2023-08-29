@@ -140,8 +140,6 @@ function checkAdjacentCells (x, y, isHorizontal, shipSize, letterArray, boardCel
             for (let offsetX = -1; offsetX <= 1; offsetX++) {
                 const neighborX = letterArray[letterArray.indexOf(x) + offsetX];
                 const neighborY = parseInt(y) + offsetY;
-                console.log(x, y);
-                console.log(neighborX, neighborY);
 
                 if (cell.occupied) {
                     return console.log('Pole zajęte')
@@ -166,11 +164,11 @@ function flipDirection(button) {
     button.addEventListener('click', () => {
         if (isHorizontal) {
             isHorizontal = false;
-            console.log('zmiana na false');
+            button.style.setProperty('--before-rotate', '90deg');
 
         } else {
             isHorizontal = true; 
-            console.log('zmiana na true');
+            button.style.setProperty('--before-rotate', '0deg');
         }
     })
 }

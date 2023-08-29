@@ -138,6 +138,14 @@ h1 {
     scale: 1.2;
 }
 
+#rotate::before {
+    content: '\2194';
+    margin-right: 1rem;
+    display: inline-block;
+    transform: rotate(var(--before-rotate));
+    transition: transform 0.3s ease;
+}
+
 .ships-buttons {
     width: 100%;
     display: flex;
