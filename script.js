@@ -3,8 +3,6 @@ class Ship {
         this.name = name;
         this.size = size;
         this.ship = document.getElementById(this.name);
-        this.counterHit = 0;
-        this.isSunk = false;
     }
 }
 
@@ -14,6 +12,7 @@ class Cell {
         this.col = col;
         this.occupied = false;
         this.hit = false;
+        this.element = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
     }
 
     isOccupied() {
@@ -78,6 +77,9 @@ const rows = 11;
 const cols = 11;
 let isHorizontal = true;
 let draggedShip;
+let hitCounterEnemy = 0;
+let hitCounterPlayer = 0;
+
 
 const carrier = new Ship('Carrier', 5);
 const battleship = new Ship('Battleship', 4);
@@ -120,6 +122,40 @@ function checkAdjacentCell(col, row) {
     return true;
 }
 
+function enemyFire() {
+    let colIdx = 1 + Math.floor((10 - 1) * Math.random());
+    let rowIdx = 1 + Math.floor((10 - 1) * Math.random());
+    console.log(colIdx, rowIdx);
+
+    const cell = playerGameArr.getCell(rowIdx, colIdx);
+    const cellElement = playerBoardGame.querySelector(`[data-row="${rowIdx}"][data-col="${colIdx}"]`);
+
+    
+
+    if (cell.hit) {
+        enemyFire();
+    } else {
+        cell.setHit(true);
+        if(cell.isOccupied()){
+            enemyFire();
+            hitCounterEnemy++;
+
+            if (hitCounterEnemy === 17) {
+                console.log('Komputer wygrał');
+                return;
+            }
+        } else {
+            cellElement.classList.add('hit');
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            cellElement.appendChild(dot);
+            cellElement.classList.remove('game-cells');
+        }
+    }
+
+}
+
+
 
 flipDirection(rotateBtn);
 
@@ -149,7 +185,7 @@ playerBoardGame.addEventListener('drop', (event) => {
                 const cellElement = document.querySelector(`[data-row="${rowIdx}"][data-col="${nextCol}"]`);
                 
                 cell.setOccupied(true);
-                cellElement.style.backgroundColor = 'red';
+                cellElement.style.backgroundColor = '#8A9FB1ff';
                 draggedShip.ship.style.display = 'none';
             }
         } else {
@@ -163,7 +199,7 @@ playerBoardGame.addEventListener('drop', (event) => {
                 const cellElement = document.querySelector(`[data-row="${nextRow}"][data-col="${colIdx}"]`);
                 
                 cell.setOccupied(true);
-                cellElement.style.backgroundColor = 'red';
+                cellElement.style.backgroundColor = '#8A9FB1ff';
                 draggedShip.ship.style.display = 'none';
             }
         } else {
@@ -172,4 +208,36 @@ playerBoardGame.addEventListener('drop', (event) => {
     }
 });
 
+const enemyCells = document.querySelectorAll('#enemy-board .game-cells');
+
+enemyCells.forEach(cellElement => {
+    cellElement.addEventListener('click', () => {
+        const rowIdx = parseInt(cellElement.getAttribute('data-row'));
+        const colIdx = parseInt(cellElement.getAttribute('data-col'));
+        const cell = enemyGameArr.getCell(rowIdx, colIdx);
+
+        if(!cell.hit){
+            cell.setHit(true);
+            if(cell.isOccupied()){
+                console.log('boom');
+                hitCounterPlayer++;
+
+                if (hitCounterPlayer === 17) {
+                    console.log('Gracz wygrał');
+                    return;
+                }
+            } else {
+                cellElement.classList.add('hit');
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                cellElement.appendChild(dot);
+                cellElement.classList.remove('game-cells');
+            }
+            
+        } else {
+            console.log('Tutaj już strzelano!');
+        }
+        enemyFire();
+    });
+});
 

@@ -105,11 +105,28 @@ main {
     font-size: 1.6rem;
     color: rgb(255, 255, 255);
     padding: 1rem 2rem;
-    background-color: rgb(47, 228, 235);
+    background-color: #31506Aff;
     text-transform: uppercase;
     margin-left: 1rem;
 }
 
 .ship:first-child {
     margin-left: 0;
+}
+
+.hit {
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(165, 212, 255, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dot {
+    position: relative;
+    width: 10%;
+    height: 10%;
+    background-color: rgb(113, 141, 163);
+    border-radius: 100%;
 }
