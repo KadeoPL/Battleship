@@ -3,264 +3,85 @@ class Ship {
         this.name = name;
         this.size = size;
         this.ship = document.getElementById(this.name);
+        this.counterHit = 0;
+        this.isSunk = false;
     }
 }
 
-const playerGameBoard = document.getElementById('player-board');
-const opponentGameBoard = document.getElementById('opponent-board');
-const rotateButton = document.getElementById('rotate');
-const startButton = document.getElementById('start-button');
-const restartButton = document.getElementById('restart-button');
-const playerBoardCells = [];
-const opponentBoardCells = [];
+class Cell {
+    constructor(row, col) {
+        this.row = row;
+        this.col = col;
+        this.occupied = false;
+        this.hit = false;
+    }
+
+    isOccupied() {
+        return this.occupied;
+    }
+
+    setOccupied(value) {
+        this.occupied = value;
+    }
+
+    isHit(){
+        return this.hit;
+    }
+
+    setHit(value){
+        this.hit = value;
+    }
+}
+
+class GameBoard {
+    constructor(rows, cols, boardGameName) {
+        this.rows = rows;
+        this.cols = cols;
+        this.board = new Array(rows).fill(null).map(() => new Array(cols).fill(null));
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                
+                if (row === 0 || col === 0) {
+                    const gameBoardCell = document.createElement('div');
+                    gameBoardCell.classList.add('game-labels');
+                    boardGameName.appendChild(gameBoardCell);
+                    
+                    if (row > 0) {
+                        gameBoardCell.textContent = row;
+                    } 
+
+                    if (col > 0) {
+                        gameBoardCell.textContent = String.fromCharCode(64 + col);
+                    }
+                } else {
+                    
+                    this.board[row][col] = new Cell(row, col);
+                    const gameBoardCell = document.createElement('div');
+                    gameBoardCell.classList.add('game-cells');
+                    boardGameName.appendChild(gameBoardCell);
+                }
+            }
+        }
+    }
+
+    getCell(row, col) {
+        return this.board[row][col];
+    }
+}
+
+const rotateBtn = document.getElementById('rotate-btn');
+const playerBoardGame = document.getElementById('player-board');
+const enemyBoardGame = document.getElementById('enemy-board');
+const rows = 11;
+const cols = 11;
+let isHorizontal = true;
+
 const carrier = new Ship('Carrier', 5);
 const battleship = new Ship('Battleship', 4);
 const cruiser = new Ship('Cruiser', 3);
 const submarine = new Ship('Submarine', 3);
 const destroyer = new Ship('Destroyer', 2);
-const rowCell = [];
-let isHorizontal = true;
-let gameEnd = false;
-
 const shipsArr = [carrier, battleship, cruiser, submarine, destroyer];
-const lettersArr = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-
-let shipCounter = shipsArr.length;
-
-function createGameBoard(boardName, arrName) {
-    
-    for (let i = 0; i < lettersArr.length; i++) {
-        arrName[lettersArr[i]] = [];
-    }
-    
-    for (let y = 0; y < 11; y++) {
-        const row = document.createElement('div');
-
-        for (let x = 0; x <= lettersArr.length; x++) {
-            const gameBoardCell = document.createElement('div');
-            if (x === 0 || y === 0) {
-                gameBoardCell.classList.add('game-label');
-                gameBoardCell.classList.add('text-shadow');
-                boardName.appendChild(gameBoardCell);
-                if (x>0) {
-                    gameBoardCell.textContent = lettersArr[x - 1];
-                }
-
-                if (y>0) {
-                    gameBoardCell.textContent = y;
-                }
-            } else {
-                gameBoardCell.classList.add('game-cells');
-                boardName.appendChild(gameBoardCell);
-                gameBoardCell.dataset.x = lettersArr[x - 1];
-                gameBoardCell.dataset.y = y;
-                arrName[lettersArr[x - 1]][y] = { element: gameBoardCell, occupied: false };
-            }
-
-        }
-    }
-}
-
-
-function dragShip(board, shipName, currentShipSize) {
-
-    board.addEventListener('dragover', (event) => {
-        event.preventDefault();
-    });
-
-    /*board.addEventListener('dragenter', (event) => {
-        event.preventDefault();
-        let x = event.target.dataset.x;
-        let y = event.target.dataset.y;
-        let cell = playerBoardCells[x][y];
-        
-        if(cell.element.classList.contains('game-cells') && ((lettersArr.indexOf(x) >= 0) && (lettersArr.indexOf(x) + currentShipSize < 10) || y > 0 && (parseInt(y) + currentShipSize <= 11))){
-
-            if (isHorizontal) {
-                
-                for (let offsetX = 0; offsetX <= currentShipSize; offsetX++) {
-                     cell.element.classList.add('hovered');
-                     cell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + offsetX]][y];
-
-                }
-            } else {
-
-                for (let offsetY = 0; offsetY <= currentShipSize; offsetY++) {
-                    cell.element.classList.add('hovered');
-                    cell = playerBoardCells[x][parseInt(y) + offsetY];
-                    }
-                }
-        }
-    });*/
-
-        /*board.addEventListener('dragenter', (event) => {
-        event.preventDefault();
-        console.log(event.target);
-        if (event.target.classList.contains('game-cells')) {
-
-            let x = event.target.dataset.x;
-            let y = event.target.dataset.y;
-            let cell = playerBoardCells[x][y];
-            
-            if(((lettersArr.indexOf(x) >= 0) && (lettersArr.indexOf(x) + currentShipSize < 10) || y > 0 && (parseInt(y) + currentShipSize <= 11))){
-    
-                if (isHorizontal) {
-                    
-                    for (let offsetX = 0; offsetX <= currentShipSize; offsetX++) {
-                         cell.element.classList.add('hovered');
-                         cell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + offsetX]][y];
-    
-                    }
-                } else {
-    
-                    for (let offsetY = 0; offsetY <= currentShipSize; offsetY++) {
-                        cell.element.classList.add('hovered');
-                        cell = playerBoardCells[x][parseInt(y) + offsetY];
-                        }
-                    }
-            }
-        }
-    });
-
-    
-    board.addEventListener('dragleave', (event) => {
-        event.preventDefault();
-        let x = event.target.dataset.x;
-        let y = event.target.dataset.y;
-        let cell = playerBoardCells[x][y];
-        
-        if(cell.element.classList.contains('game-cells') && ((lettersArr.indexOf(x) >= 0) && (lettersArr.indexOf(x) + currentShipSize < 10) || y > 0 && (parseInt(y) + currentShipSize <= 11))){
-
-            if (isHorizontal) {
-                
-                for (let offsetX = 0; offsetX <= currentShipSize; offsetX++) {
-                     cell.element.classList.add('hovered');
-                     cell = playerBoardCells[lettersArr[lettersArr.indexOf(x) + offsetX]][y];
-
-                }
-            } else {
-
-                for (let offsetY = 0; offsetY <= currentShipSize; offsetY++) {
-                    cell.element.classList.remove('hovered');
-                    cell = playerBoardCells[x][parseInt(y) + offsetY];
-                    }
-                }
-        }
-    });*/
-
-
-    board.addEventListener('drop', (event) => {
-        event.preventDefault();
-    
-        if (event.target.classList.contains('game-cells')) {
-            
-            for (const letter of lettersArr) {
-                for (let y = 1; y <= 10; y++) {
-                    const cell = playerBoardCells[letter][y];
-                    cell.element.classList.remove('hovered');
-                }
-            }
-            
-            let x = event.target.dataset.x;
-            let y = event.target.dataset.y;
-            
-    
-            if (isHorizontal && (lettersArr.indexOf(x) + currentShipSize) <= lettersArr.length) {
-                checkAdjacentCells(x, y, isHorizontal, currentShipSize, lettersArr, playerBoardCells, (error, shipCells) => {
-                    if (error) {
-                        console.log(error); 
-                    } else {
-                        shipCounter--;
-                        console.log(shipCounter);
-                        shipCells.forEach(element => {
-                            element.element.style.backgroundColor = 'red';
-                            element.occupied = true;
-                            event.dataTransfer.setData('size', shipName.size); 
-                            shipName.style.display = 'none';
-                        });
-                        
-                    }
-                });
-            } else if (!isHorizontal && (parseInt(y) + currentShipSize) <= 11) {
-                checkAdjacentCells(x, y, false, currentShipSize, lettersArr, playerBoardCells, (error, shipCells) => {
-                    if (error) {
-                        console.log(error); 
-                    } else {
-                        shipCounter--;
-                        console.log(shipCounter);
-                        shipCells.forEach(element => {
-                            element.element.style.backgroundColor = 'red';
-                            element.occupied = true;
-                            shipName.style.display = 'none';
-                        });
-                        
-                    }
-                });
-
-            } else {
-                console.log('Statek wychodzi poza granice planszy');
-            }
-            currentShipSize = 0;
-        }
-
-        board.addEventListener('dragend', () => {
-            playerBoardCells.forEach(column => {
-                column.forEach(cell => {
-                    cell.element.classList.remove('hovered');
-                });
-            });
-        });
-
-    });
-};    
-
-function checkAdjacentCells (x, y, isHorizontal, shipSize, letterArray, boardCells, callback) {
-    let cell = boardCells[x][y];
-    let adjacentCells = [];
-    if (isHorizontal) {
-        for (let offsetX = -1; offsetX < shipSize + 1; offsetX++) {
-            for (let offsetY = -1; offsetY <= 2; offsetY++) {
-
-                const neighborX = letterArray[letterArray.indexOf(x) + offsetX];
-                const neighborY = parseInt(y) + offsetY;
-              
-                if (cell.occupied) {
-                    return console.log('Pole zajęte')
-                };
-
-                if (offsetX >= 0 && offsetX < shipSize && offsetY === 1){
-                    adjacentCells.push(cell);
-                }
-
-                if (!boardCells[neighborX] || !boardCells[neighborX][neighborY]) continue;
-            
-                cell = boardCells[neighborX][neighborY];
-              
-            }
-          }
-    } else {
-        for (let offsetY = -1; offsetY < shipSize + 1; offsetY++) {
-            for (let offsetX = -1; offsetX <= 2; offsetX++) {
-                const neighborX = letterArray[letterArray.indexOf(x) + offsetX];
-                const neighborY = parseInt(y) + offsetY;
-
-                if (cell.occupied) {
-                    return console.log('Pole zajęte')
-                };
-
-                if (offsetY >= 0 && offsetY < shipSize && offsetX === 1) { 
-                    adjacentCells.push(cell);
-                }
-
-                if (!boardCells[neighborX] || !boardCells[neighborX][neighborY]) continue;
-
-                cell = boardCells[neighborX][neighborY];
-            }
-        }
-    }
-    callback(null, adjacentCells);
-
-}
 
 
 function flipDirection(button) {
@@ -276,30 +97,26 @@ function flipDirection(button) {
     })
 }
 
-function startGame (button){
-    button.addEventListener('click', () => {
-        if(shipCounter === 0 ){
-            console.log('Wszystkie statki na planszy');
-        } else {
-            console.log('Nie umieszczono wszytkich statków');
-        }
-    })
+function dragShip(board, shipName) {
+
+    board.addEventListener('dragover', (event) => {
+        event.preventDefault();
+    });
+
+    board.addEventListener('drop', (event) => {
+        event.preventDefault();
+    
+})
 }
 
-
-createGameBoard(playerGameBoard, playerBoardCells);
-createGameBoard(opponentGameBoard, opponentBoardCells);
-console.log(shipCounter);
+const playerGameBoard = new GameBoard(rows, cols, playerBoardGame);
+const enemyGameBoard = new GameBoard(rows, cols, enemyBoardGame);
 
 
-do {
+flipDirection(rotateBtn);
 
-    shipsArr.forEach(shipName => {
-        shipName.ship.addEventListener('dragstart', (event) => { 
-            dragShip(playerGameBoard, shipName.ship, shipName.size);
-        });
+shipsArr.forEach(ship => {
+    ship.ship.addEventListener('dragstart', (event) => { 
+        dragShip(playerGameBoard.board, ship.name);
     });
-    flipDirection(rotateButton);
-    startGame(startButton);
-
-} while (gameEnd);
+});
