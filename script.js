@@ -58,6 +58,8 @@ class GameBoard {
                     this.board[row][col] = new Cell(row, col);
                     const gameBoardCell = document.createElement('div');
                     gameBoardCell.classList.add('game-cells');
+                    gameBoardCell.setAttribute('data-row', row);
+                    gameBoardCell.setAttribute('data-col', col);
                     boardGameName.appendChild(gameBoardCell);
                 }
             }
@@ -83,6 +85,9 @@ const submarine = new Ship('Submarine', 3);
 const destroyer = new Ship('Destroyer', 2);
 const shipsArr = [carrier, battleship, cruiser, submarine, destroyer];
 
+const playerGameArr = new GameBoard(rows, cols, playerBoardGame);
+const enemyGameArr = new GameBoard(rows, cols, enemyBoardGame);
+
 
 function flipDirection(button) {
     button.addEventListener('click', () => {
@@ -97,7 +102,12 @@ function flipDirection(button) {
     })
 }
 
-function dragShip(board, shipName) {
+function dragShip(board, array, ship) {
+    
+    board.addEventListener('drag', (event) => {
+        ship.style.backgroundColor = 'green';
+        event.preventDefault();
+    });
 
     board.addEventListener('dragover', (event) => {
         event.preventDefault();
@@ -105,18 +115,49 @@ function dragShip(board, shipName) {
 
     board.addEventListener('drop', (event) => {
         event.preventDefault();
+        console.log('Wywołana funkcja');
+        const rowIdx = parseInt(event.target.getAttribute('data-row'));
+        const colIdx = parseInt(event.target.getAttribute('data-col'));
+        let cell = array.getCell(rowIdx, colIdx);
+
+        if (cell.isOccupied()) {
+            console.log('Pole zajęte');
+        } else {
+            if (isHorizontal) {
+                for (let i = 0; i < ship.size; i++) {
+                    const nextCol = colIdx + i;
+                    cell = array.getCell(rowIdx, nextCol);
+                    console.log(ship.size);
+
+                    
+                    const cellElement = document.querySelector(`[data-row="${rowIdx}"][data-col="${nextCol}"]`);
+                    cellElement.style.backgroundColor = 'red';
+
+                    cell.setOccupied(true);
+                    cell.ship = ship;
+                }
+            }
+        }
+
+        console.log(rowIdx, colIdx);
+        console.log(cell);
+
+
+    board.addEventListener('dragend', (event) => {
+         event.preventDefault();
+    });    
     
-})
-}
-
-const playerGameBoard = new GameBoard(rows, cols, playerBoardGame);
-const enemyGameBoard = new GameBoard(rows, cols, enemyBoardGame);
-
+})};
 
 flipDirection(rotateBtn);
 
-shipsArr.forEach(ship => {
-    ship.ship.addEventListener('dragstart', (event) => { 
-        dragShip(playerGameBoard.board, ship.name);
+
+shipsArr.forEach(shipName => {
+    shipName.ship.addEventListener('dragstart', (event) => {
+        dragShip(playerBoardGame, playerGameArr, shipName);
+        console.log('Umieszczam statek');
     });
 });
+
+
+
