@@ -77,6 +77,7 @@ const enemyBoardGame = document.getElementById('enemy-board');
 const rows = 11;
 const cols = 11;
 let isHorizontal = true;
+let draggedShip;
 
 const carrier = new Ship('Carrier', 5);
 const battleship = new Ship('Battleship', 4);
@@ -102,62 +103,73 @@ function flipDirection(button) {
     })
 }
 
-function dragShip(board, array, ship) {
-    
-    board.addEventListener('drag', (event) => {
-        ship.style.backgroundColor = 'green';
-        event.preventDefault();
-    });
+function checkAdjacentCell(col, row) {
+    for (let i = -1; i < draggedShip.size + 1; i++) {
+        for (let j = -1; j < draggedShip.size + 1; j++) {
+            const nextCol = col + j;
+            const nextRow = row + i;
 
-    board.addEventListener('dragover', (event) => {
-        event.preventDefault();
-    });
-
-    board.addEventListener('drop', (event) => {
-        event.preventDefault();
-        console.log('Wywołana funkcja');
-        const rowIdx = parseInt(event.target.getAttribute('data-row'));
-        const colIdx = parseInt(event.target.getAttribute('data-col'));
-        let cell = array.getCell(rowIdx, colIdx);
-
-        if (cell.isOccupied()) {
-            console.log('Pole zajęte');
-        } else {
-            if (isHorizontal) {
-                for (let i = 0; i < ship.size; i++) {
-                    const nextCol = colIdx + i;
-                    cell = array.getCell(rowIdx, nextCol);
-                    console.log(ship.size);
-
-                    
-                    const cellElement = document.querySelector(`[data-row="${rowIdx}"][data-col="${nextCol}"]`);
-                    cellElement.style.backgroundColor = 'red';
-
-                    cell.setOccupied(true);
-                    cell.ship = ship;
+            if (nextCol >= 1 && nextCol <= 10 && nextRow >= 1 && nextRow <= 10) {
+                const nextCell = playerGameArr.getCell(nextRow, nextCol);
+                if (nextCell.isOccupied()) {
+                    return false;
                 }
             }
         }
+    }
+    return true;
+}
 
-        console.log(rowIdx, colIdx);
-        console.log(cell);
-
-
-    board.addEventListener('dragend', (event) => {
-         event.preventDefault();
-    });    
-    
-})};
 
 flipDirection(rotateBtn);
 
 
 shipsArr.forEach(shipName => {
     shipName.ship.addEventListener('dragstart', (event) => {
-        dragShip(playerBoardGame, playerGameArr, shipName);
         console.log('Umieszczam statek');
+        draggedShip = shipName;
     });
 });
 
+playerBoardGame.addEventListener('dragover', (event) => {
+    event.preventDefault();
+});
+
+playerBoardGame.addEventListener('drop', (event) => {
+    event.preventDefault();
+
+    const rowIdx = parseInt(event.target.getAttribute('data-row'));
+    const colIdx = parseInt(event.target.getAttribute('data-col'));
+
+    if (isHorizontal) {
+        if ((colIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx)) {
+            for (let i = 0; i < draggedShip.size; i++) {
+                const nextCol = colIdx + i;
+                const cell = playerGameArr.getCell(rowIdx, nextCol);
+                const cellElement = document.querySelector(`[data-row="${rowIdx}"][data-col="${nextCol}"]`);
+                
+                cell.setOccupied(true);
+                cellElement.style.backgroundColor = 'red';
+                draggedShip.ship.style.display = 'none';
+            }
+        } else {
+            console.log('Statek nie mieści się na planszy lub sąsiednie pola są zajęte');
+        }
+    } else {
+        if ((rowIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx)) {
+            for (let i = 0; i < draggedShip.size; i++) {
+                const nextRow = rowIdx + i;
+                const cell = playerGameArr.getCell(nextRow, colIdx);
+                const cellElement = document.querySelector(`[data-row="${nextRow}"][data-col="${colIdx}"]`);
+                
+                cell.setOccupied(true);
+                cellElement.style.backgroundColor = 'red';
+                draggedShip.ship.style.display = 'none';
+            }
+        } else {
+            console.log('Statek nie mieści się na planszy lub sąsiednie pola są zajęte');
+        }
+    }
+});
 
 

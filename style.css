@@ -58,7 +58,7 @@ main {
 
 .ships-container {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     padding: 0 5rem;
     margin-bottom: 2rem;
     margin-top: 5rem;
@@ -73,10 +73,15 @@ main {
     font-size: 1.6rem;
     margin-left: 3rem;
     border: none;
-    background-color: transparent;
+    background-color: red;
+    padding: 1rem 1.2rem;
     cursor: pointer;
     transform: scale 2s;  
     color: rgb(255, 255, 255);     
+}
+
+.btn-container > button:nth-child(2) {
+    background-color: rgb(107, 107, 107);  
 }
 
 .btn-container > button:hover {
@@ -100,6 +105,11 @@ main {
     font-size: 1.6rem;
     color: rgb(255, 255, 255);
     padding: 1rem 2rem;
-    background-color: red;
+    background-color: rgb(47, 228, 235);
     text-transform: uppercase;
+    margin-left: 1rem;
+}
+
+.ship:first-child {
+    margin-left: 0;
 }
