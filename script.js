@@ -123,8 +123,8 @@ function checkAdjacentCell(col, row) {
 }
 
 function enemyFire() {
-    let colIdx = 1 + Math.floor((10 - 1) * Math.random());
-    let rowIdx = 1 + Math.floor((10 - 1) * Math.random());
+    let colIdx = 1 + Math.floor((11 - 1) * Math.random());
+    let rowIdx = 1 + Math.floor((11 - 1) * Math.random());
     console.log(colIdx, rowIdx);
 
     const cell = playerGameArr.getCell(rowIdx, colIdx);
@@ -137,13 +137,19 @@ function enemyFire() {
     } else {
         cell.setHit(true);
         if(cell.isOccupied()){
-            enemyFire();
+            cellElement.classList.add('hit');
+            const dot = document.createElement('div');
+            dot.classList.add('dot-ship');
+            cellElement.appendChild(dot);
+            
             hitCounterEnemy++;
 
+            
             if (hitCounterEnemy === 17) {
                 console.log('Komputer wygrał');
                 return;
             }
+            enemyFire();
         } else {
             cellElement.classList.add('hit');
             const dot = document.createElement('div');
@@ -155,6 +161,38 @@ function enemyFire() {
 
 }
 
+function placeEnemyShips() {
+    const enemyShipsArr = [carrier, battleship, cruiser, submarine, destroyer];
+
+    enemyShipsArr.forEach(ship => {
+        let isPlaced = false;
+        while (!isPlaced) {
+            const isHorizontal = Math.random() < 0.5; // Losowo wybierz położenie: poziome lub pionowe
+            const rowIdx = 1 + Math.floor(Math.random() * 10); // Losowo wybierz numer wiersza od 1 do 10
+            const colIdx = 1 + Math.floor(Math.random() * 10); // Losowo wybierz numer kolumny od 1 do 10
+
+            if (isHorizontal) {
+                if ((colIdx + ship.size - 1) <= 10 && checkAdjacentCell(colIdx, rowIdx, enemyGameArr)) {
+                    for (let i = 0; i < ship.size; i++) {
+                        const nextCol = colIdx + i;
+                        const cell = enemyGameArr.getCell(rowIdx, nextCol);
+                        cell.setOccupied(true);
+                    }
+                    isPlaced = true;
+                }
+            } else {
+                if ((rowIdx + ship.size - 1) <= 10 && checkAdjacentCell(colIdx, rowIdx, enemyGameArr)) {
+                    for (let i = 0; i < ship.size; i++) {
+                        const nextRow = rowIdx + i;
+                        const cell = enemyGameArr.getCell(nextRow, colIdx);
+                        cell.setOccupied(true);
+                    }
+                    isPlaced = true;
+                }
+            }
+        }
+    });
+}
 
 
 flipDirection(rotateBtn);
@@ -209,6 +247,7 @@ playerBoardGame.addEventListener('drop', (event) => {
 });
 
 const enemyCells = document.querySelectorAll('#enemy-board .game-cells');
+placeEnemyShips();
 
 enemyCells.forEach(cellElement => {
     cellElement.addEventListener('click', () => {
@@ -218,26 +257,29 @@ enemyCells.forEach(cellElement => {
 
         if(!cell.hit){
             cell.setHit(true);
+            
             if(cell.isOccupied()){
                 console.log('boom');
-                hitCounterPlayer++;
+                
 
                 if (hitCounterPlayer === 17) {
                     console.log('Gracz wygrał');
                     return;
                 }
+                hitCounterPlayer++;
             } else {
                 cellElement.classList.add('hit');
                 const dot = document.createElement('div');
                 dot.classList.add('dot');
                 cellElement.appendChild(dot);
                 cellElement.classList.remove('game-cells');
+                enemyFire();
             }
             
         } else {
             console.log('Tutaj już strzelano!');
         }
-        enemyFire();
+        
     });
 });
 
