@@ -88,6 +88,14 @@ const submarine = new Ship('Submarine', 3);
 const destroyer = new Ship('Destroyer', 2);
 const shipsArr = [carrier, battleship, cruiser, submarine, destroyer];
 
+const enemyCarrier = new Ship('Carrier', 5);
+const enemyBattleship = new Ship('Battleship', 4);
+const enemyCruiser = new Ship('Cruiser', 3);
+const enemySubmarine = new Ship('Submarine', 3);
+const enemyDestroyer = new Ship('Destroyer', 2);
+const enemyShipsArr = [enemyCarrier, enemyBattleship, enemyCruiser, enemySubmarine, enemyDestroyer];
+
+
 const playerGameArr = new GameBoard(rows, cols, playerBoardGame);
 const enemyGameArr = new GameBoard(rows, cols, enemyBoardGame);
 
@@ -105,9 +113,12 @@ function flipDirection(button) {
     })
 }
 
-function checkAdjacentCell(col, row) {
-    for (let i = -1; i < draggedShip.size + 1; i++) {
-        for (let j = -1; j < draggedShip.size + 1; j++) {
+function checkAdjacentCell(col, row, size) {
+    
+
+
+    for (let i = -1; i < size + 1; i++) {
+        for (let j = -1; j < size + 1; j++) {
             const nextCol = col + j;
             const nextRow = row + i;
 
@@ -161,18 +172,16 @@ function enemyFire() {
 
 }
 
-function placeEnemyShips() {
-    const enemyShipsArr = [carrier, battleship, cruiser, submarine, destroyer];
+function placeEnemyShips() {;
 
     enemyShipsArr.forEach(ship => {
         let isPlaced = false;
         while (!isPlaced) {
-            const isHorizontal = Math.random() < 0.5; // Losowo wybierz położenie: poziome lub pionowe
-            const rowIdx = 1 + Math.floor(Math.random() * 10); // Losowo wybierz numer wiersza od 1 do 10
-            const colIdx = 1 + Math.floor(Math.random() * 10); // Losowo wybierz numer kolumny od 1 do 10
-
+            const isHorizontal = Math.random() < 0.5; 
+            const rowIdx = 1 + Math.floor(Math.random() * 10); 
+            const colIdx = 1 + Math.floor(Math.random() * 10); 
             if (isHorizontal) {
-                if ((colIdx + ship.size - 1) <= 10 && checkAdjacentCell(colIdx, rowIdx, enemyGameArr)) {
+                if ((colIdx + ship.size - 1) <= 10 && checkAdjacentCell(colIdx, rowIdx, ship.size)) {
                     for (let i = 0; i < ship.size; i++) {
                         const nextCol = colIdx + i;
                         const cell = enemyGameArr.getCell(rowIdx, nextCol);
@@ -181,7 +190,7 @@ function placeEnemyShips() {
                     isPlaced = true;
                 }
             } else {
-                if ((rowIdx + ship.size - 1) <= 10 && checkAdjacentCell(colIdx, rowIdx, enemyGameArr)) {
+                if ((rowIdx + ship.size - 1) <= 10 && checkAdjacentCell(colIdx, rowIdx, ship.size)) {
                     for (let i = 0; i < ship.size; i++) {
                         const nextRow = rowIdx + i;
                         const cell = enemyGameArr.getCell(nextRow, colIdx);
@@ -216,7 +225,7 @@ playerBoardGame.addEventListener('drop', (event) => {
     const colIdx = parseInt(event.target.getAttribute('data-col'));
 
     if (isHorizontal) {
-        if ((colIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx)) {
+        if ((colIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size)) {
             for (let i = 0; i < draggedShip.size; i++) {
                 const nextCol = colIdx + i;
                 const cell = playerGameArr.getCell(rowIdx, nextCol);
@@ -230,7 +239,7 @@ playerBoardGame.addEventListener('drop', (event) => {
             console.log('Statek nie mieści się na planszy lub sąsiednie pola są zajęte');
         }
     } else {
-        if ((rowIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx)) {
+        if ((rowIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size)) {
             for (let i = 0; i < draggedShip.size; i++) {
                 const nextRow = rowIdx + i;
                 const cell = playerGameArr.getCell(nextRow, colIdx);
@@ -259,7 +268,10 @@ enemyCells.forEach(cellElement => {
             cell.setHit(true);
             
             if(cell.isOccupied()){
-                console.log('boom');
+                console.log('Trafiony statek przeciwnika');
+                const dot = document.createElement('div');
+                dot.classList.add('dot-ship');
+                cellElement.appendChild(dot);
                 
 
                 if (hitCounterPlayer === 17) {
