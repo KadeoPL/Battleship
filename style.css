@@ -133,8 +133,8 @@ main {
 
 .dot-ship {
     position: relative;
-    width: 12%;
-    height: 12%;
+    width: 20%;
+    height: 20%;
     background-color: rgb(207, 46, 46);
     border-radius: 100%;
 }
