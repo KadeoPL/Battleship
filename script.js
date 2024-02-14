@@ -113,9 +113,26 @@ function flipDirection(button) {
     })
 }
 
-function checkAdjacentCell(col, row, size) {
+function checkAdjacentCell(col, row, size, orientation) {
 
-        for (let i = -1; i < size ; i++) {
+    if (orientation) {
+    for (let i = -1; i < size ; i++) {
+        for (let j = -1; j < size+1; j++) {
+            const nextCol = col + j;
+            const nextRow = row + i;
+
+            if (nextCol >= 1 && nextCol <= 10 && nextRow >= 1 && nextRow <= 10) {
+                const nextCell = playerGameArr.getCell(nextRow, nextCol);
+                if (nextCell.isOccupied()) {
+                    console.log('Pole ' + nextRow + ' ' + nextCol + 'jest zajete');
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+} else {
+    for (let i = -1; i < size+1 ; i++) {
         for (let j = -1; j < size; j++) {
             const nextCol = col + j;
             const nextRow = row + i;
@@ -124,13 +141,14 @@ function checkAdjacentCell(col, row, size) {
             if (nextCol >= 1 && nextCol <= 10 && nextRow >= 1 && nextRow <= 10) {
                 const nextCell = playerGameArr.getCell(nextRow, nextCol);
                 if (nextCell.isOccupied()) {
-                    console.log('Poie ' + nextCol + ' ' + nextRow + 'jest zajete');
+                    console.log('Pole ' + nextRow + ' ' + nextCol + 'jest zajete');
                     return false;
                 }
             }
         }
     }
     return true;
+}
 }
 
 function enemyFire() {
@@ -172,36 +190,34 @@ function enemyFire() {
 
 }
 
-function placeEnemyShips() {;
-
+function placeEnemyShips() {
     enemyShipsArr.forEach(ship => {
         let isPlaced = false;
         while (!isPlaced) {
-            let isHorizontal = Math.random() < 0.5; 
-            let rowIdx = 1 + Math.floor(Math.random() * 10); 
-            let colIdx = 1 + Math.floor(Math.random() * 10); 
+            const isHorizontal = Math.random() < 0.5;
+            const rowIdx = 1 + Math.floor(Math.random() * 10);
+            const colIdx = 1 + Math.floor(Math.random() * 10);
+            console.log('Umieszczam: ' + ship.name);
 
             if (isHorizontal) {
-                if (colIdx + ship.size <= 10 && checkAdjacentCell(colIdx, rowIdx, ship.size)) {
+                if (colIdx + ship.size <= 10 && checkAdjacentCell(colIdx, rowIdx, ship.size, isHorizontal, enemyGameArr)) {
                     for (let i = 0; i < ship.size; i++) {
                         const nextCol = colIdx + i;
                         const cell = enemyGameArr.getCell(rowIdx, nextCol);
-                        const cellElement = document.querySelector(`[data-row="${rowIdx}"][data-col="${nextCol}"]`);
+                        const cellElement = enemyBoardGame.querySelector(`[data-row="${rowIdx}"][data-col="${nextCol}"]`);
                         cellElement.style.backgroundColor = '#FFFFFF';
                         cell.setOccupied(true);
-                        console.log('Umieszczam ' + ship.name + ' ' + rowIdx + ' ' + nextCol);
                     }
                     isPlaced = true;
-                } 
+                }
             } else {
-                if (rowIdx + ship.size <= 10 && checkAdjacentCell(colIdx, rowIdx, ship.size)) {
+                if (rowIdx + ship.size <= 10 && checkAdjacentCell(colIdx, rowIdx, ship.size, isHorizontal, enemyGameArr)) {
                     for (let i = 0; i < ship.size; i++) {
                         const nextRow = rowIdx + i;
                         const cell = enemyGameArr.getCell(nextRow, colIdx);
-                        const cellElement = document.querySelector(`[data-row="${nextRow}"][data-col="${colIdx}"]`);
+                        const cellElement = enemyBoardGame.querySelector(`[data-row="${nextRow}"][data-col="${colIdx}"]`);
                         cellElement.style.backgroundColor = '#FFFFFF';
                         cell.setOccupied(true);
-                        console.log('Umieszczam ' + ship.name + ' ' + nextRow + ' ' + colIdx);
                     }
                     isPlaced = true;
                 }
@@ -209,7 +225,6 @@ function placeEnemyShips() {;
         }
     });
 }
-
 
 flipDirection(rotateBtn);
 
@@ -232,7 +247,7 @@ playerBoardGame.addEventListener('drop', (event) => {
     const colIdx = parseInt(event.target.getAttribute('data-col'));
 
     if (isHorizontal) {
-        if ((colIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size)) {
+        if ((colIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size, isHorizontal)) {
             for (let i = 0; i < draggedShip.size; i++) {
                 const nextCol = colIdx + i;
                 const cell = playerGameArr.getCell(rowIdx, nextCol);
@@ -246,7 +261,7 @@ playerBoardGame.addEventListener('drop', (event) => {
             console.log('Statek nie mieści się na planszy lub sąsiednie pola są zajęte');
         }
     } else {
-        if ((rowIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size)) {
+        if ((rowIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size, isHorizontal)) {
             for (let i = 0; i < draggedShip.size; i++) {
                 const nextRow = rowIdx + i;
                 const cell = playerGameArr.getCell(nextRow, colIdx);
@@ -263,7 +278,7 @@ playerBoardGame.addEventListener('drop', (event) => {
 });
 
 const enemyCells = document.querySelectorAll('#enemy-board .game-cells');
-/*placeEnemyShips();*/
+placeEnemyShips();
 
 enemyCells.forEach(cellElement => {
     cellElement.addEventListener('click', () => {
