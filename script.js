@@ -113,7 +113,7 @@ function flipDirection(button) {
     })
 }
 
-function checkAdjacentCell(col, row, size, orientation) {
+function checkAdjacentCell(col, row, size, orientation, gameArr) {
 
     if (orientation) {
     for (let i = -1; i < size ; i++) {
@@ -122,7 +122,7 @@ function checkAdjacentCell(col, row, size, orientation) {
             const nextRow = row + i;
 
             if (nextCol >= 1 && nextCol <= 10 && nextRow >= 1 && nextRow <= 10) {
-                const nextCell = playerGameArr.getCell(nextRow, nextCol);
+                const nextCell = gameArr.getCell(nextRow, nextCol);
                 if (nextCell.isOccupied()) {
                     console.log('Pole ' + nextRow + ' ' + nextCol + 'jest zajete');
                     return false;
@@ -139,7 +139,7 @@ function checkAdjacentCell(col, row, size, orientation) {
             console.log('Sprawdzam pole ' + nextRow + ' ' + nextCol);
 
             if (nextCol >= 1 && nextCol <= 10 && nextRow >= 1 && nextRow <= 10) {
-                const nextCell = playerGameArr.getCell(nextRow, nextCol);
+                const nextCell = gameArr.getCell(nextRow, nextCol);
                 if (nextCell.isOccupied()) {
                     console.log('Pole ' + nextRow + ' ' + nextCol + 'jest zajete');
                     return false;
@@ -247,7 +247,7 @@ playerBoardGame.addEventListener('drop', (event) => {
     const colIdx = parseInt(event.target.getAttribute('data-col'));
 
     if (isHorizontal) {
-        if ((colIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size, isHorizontal)) {
+        if ((colIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size, isHorizontal, playerGameArr)) {
             for (let i = 0; i < draggedShip.size; i++) {
                 const nextCol = colIdx + i;
                 const cell = playerGameArr.getCell(rowIdx, nextCol);
@@ -261,7 +261,7 @@ playerBoardGame.addEventListener('drop', (event) => {
             console.log('Statek nie mieści się na planszy lub sąsiednie pola są zajęte');
         }
     } else {
-        if ((rowIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size, isHorizontal)) {
+        if ((rowIdx + draggedShip.size) <= 10 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size, isHorizontal, playerGameArr)) {
             for (let i = 0; i < draggedShip.size; i++) {
                 const nextRow = rowIdx + i;
                 const cell = playerGameArr.getCell(nextRow, colIdx);
