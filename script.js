@@ -310,6 +310,7 @@ playerBoardGame.addEventListener('drop', (event) => {
             }
         } else {
             showPopup("The ship does not fit on the board or the adjacent spaces are occupied!", 2000);
+            hoverCell(rowIdx, colIdx, draggedShip.size, isHorizontal, playerGameArr, ' rgba(0, 0, 0, 0.4)');
         }
     } else {
         if ((rowIdx + draggedShip.size) <= 11 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size, isHorizontal, playerGameArr)) {
@@ -326,6 +327,7 @@ playerBoardGame.addEventListener('drop', (event) => {
             }
         } else {
             showPopup("The ship does not fit on the board or the adjacent spaces are occupied!", 2000);
+            hoverCell(rowIdx, colIdx, draggedShip.size, isHorizontal, playerGameArr, ' rgba(0, 0, 0, 0.4)');
         }
     }
 });
@@ -346,24 +348,26 @@ function hoverCell(row, col, size, orientation, gameArr, color){
     if(orientation) {
         for (let i = 0; i < size; i++) {
             const nextCol = col + i;
+            if (nextCol > 0 && nextCol <= 10){
             const cellElement = document.querySelector(`[data-row="${row}"][data-col="${nextCol}"]`);
-            const arrElement = gameArr.getCell(row, nextCol);
-            if(!arrElement.isOccupied()){
+            if (!gameArr.getCell(row, nextCol).isOccupied()) {
                 cellElement.style.backgroundColor = color;
             }
-            
+        }
         }
     } else {
         for (let i = 0; i < size; i++) {
             const nextRow = row + i;
-            const cellElement = document.querySelector(`[data-row="${nextRow}"][data-col="${col}"]`);
-            const arrElement = gameArr.getCell(nextRow, col);
-            if(!arrElement.isOccupied()){
-                cellElement.style.backgroundColor = color;
+            if (nextRow > 0 && nextRow <= 10) {
+                const cellElement = document.querySelector(`[data-row="${nextRow}"][data-col="${col}"]`);
+                if (!gameArr.getCell(nextRow, col).isOccupied()) {
+                    cellElement.style.backgroundColor = color;
+                }
             }
-            
-    }}
+        }
+    }
 }
+
 
 playerBoardGame.addEventListener('dragover', (event) => {
     event.preventDefault();
