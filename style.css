@@ -73,7 +73,7 @@ main {
     font-size: 1.6rem;
     margin-left: 3rem;
     border: none;
-    background-color: red;
+    background-color: #6b6b6b;
     padding: 1rem 1.2rem;
     cursor: pointer;
     transform: scale 2s;  
@@ -141,4 +141,21 @@ main {
 
 .enemy-ship {
     background-color: red;
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(207, 46, 46);
+    padding: 20px;
+    z-index: 1000;
+    display: none;
+    color: white;
+    font-size: 2rem;
+}
+
+.show-popup {
+    display: block;
 }

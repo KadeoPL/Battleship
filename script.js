@@ -82,7 +82,6 @@ let draggedShip;
 let hitCounterEnemy = 0;
 let hitCounterPlayer = 0;
 
-
 const carrier = new Ship('Carrier', 5);
 const battleship = new Ship('Battleship', 4);
 const cruiser = new Ship('Cruiser', 3);
@@ -97,10 +96,8 @@ const enemySubmarine = new Ship('Submarine', 3);
 const enemyDestroyer = new Ship('Destroyer', 2);
 const enemyShipsArr = [enemyCarrier, enemyBattleship, enemyCruiser, enemySubmarine, enemyDestroyer];
 
-
 const playerGameArr = new GameBoard(rows, cols, playerBoardGame);
 const enemyGameArr = new GameBoard(rows, cols, enemyBoardGame);
-
 
 function flipDirection(button) {
     button.addEventListener('click', () => {
@@ -232,15 +229,64 @@ function checkStart(shipsArr) {
     const allShipsPlaced = shipsArr.every(ship => ship.placed);
 
     if (allShipsPlaced) {
+        startBtn.style.background = 'red';
         return true;
     } else {
-        console.log('Nie wszystkie statki są umieszczone');
         return false;
     }
 }
 
-flipDirection(rotateBtn);
+function playerFire(cells, gameArr){
+    cells.forEach(cellElement => {
+ 
+    cellElement.addEventListener('click', () => {
+    const rowIdx = parseInt(cellElement.getAttribute('data-row'));
+    const colIdx = parseInt(cellElement.getAttribute('data-col'));
+    const cell = gameArr.getCell(rowIdx, colIdx);
 
+    if(!cell.hit){
+        cell.setHit(true);
+        
+        if(cell.isOccupied()){
+            console.log('Trafiony statek przeciwnika');
+            cellElement.classList.add('hit');
+            const dot = document.createElement('div');
+            dot.classList.add('dot-ship');
+            cellElement.appendChild(dot);
+            
+            hitCounterPlayer++;
+            if (hitCounterPlayer === 17) {
+                console.log('Gracz wygrał');
+                return;
+            }
+        } else {
+            cellElement.classList.add('hit');
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            cellElement.appendChild(dot);
+            cellElement.classList.remove('game-cells');
+            enemyFire();
+        }
+        
+    } else {
+        console.log('Tutaj już strzelano!');
+    }
+    
+});
+});
+}
+
+function showPopup(message, duration) {
+    const popup = document.getElementById('popup');
+    popup.textContent = message;
+    popup.classList.add('show-popup');
+
+    setTimeout(() => {
+        popup.classList.remove('show-popup');
+    }, duration);
+}
+
+flipDirection(rotateBtn);
 
 shipsArr.forEach(shipName => {
     shipName.ship.addEventListener('dragstart', (event) => {
@@ -270,6 +316,7 @@ playerBoardGame.addEventListener('drop', (event) => {
                 cellElement.style.backgroundColor = '#8A9FB1ff';
                 draggedShip.ship.style.display = 'none';
                 draggedShip.placed = true;
+                checkStart(shipsArr);
             }
         } else {
             console.log('Statek nie mieści się na planszy lub sąsiednie pola są zajęte');
@@ -285,6 +332,7 @@ playerBoardGame.addEventListener('drop', (event) => {
                 cellElement.style.backgroundColor = '#8A9FB1ff';
                 draggedShip.ship.style.display = 'none';
                 draggedShip.placed = true;
+                checkStart(shipsArr);
             }
         } else {
             console.log('Statek nie mieści się na planszy lub sąsiednie pola są zajęte');
@@ -292,53 +340,16 @@ playerBoardGame.addEventListener('drop', (event) => {
     }
 });
 
-const enemyCells = document.querySelectorAll('#enemy-board .game-cells');
-placeEnemyShips();
 
 startBtn.addEventListener('click', () => {
     if(checkStart(shipsArr)){
-        enemyCells.forEach(cellElement => {
-    
-    
-            if(checkStart(shipsArr)){    
-                cellElement.addEventListener('click', () => {
-                const rowIdx = parseInt(cellElement.getAttribute('data-row'));
-                const colIdx = parseInt(cellElement.getAttribute('data-col'));
-                const cell = enemyGameArr.getCell(rowIdx, colIdx);
-        
-                if(!cell.hit){
-                    cell.setHit(true);
-                    
-                    if(cell.isOccupied()){
-                        console.log('Trafiony statek przeciwnika');
-                        cellElement.classList.add('hit');
-                        const dot = document.createElement('div');
-                        dot.classList.add('dot-ship');
-                        cellElement.appendChild(dot);
-                        
-                        hitCounterPlayer++;
-                        if (hitCounterPlayer === 17) {
-                            console.log('Gracz wygrał');
-                            return;
-                        }
-                    } else {
-                        cellElement.classList.add('hit');
-                        const dot = document.createElement('div');
-                        dot.classList.add('dot');
-                        cellElement.appendChild(dot);
-                        cellElement.classList.remove('game-cells');
-                        enemyFire();
-                    }
-                    
-                } else {
-                    console.log('Tutaj już strzelano!');
-                }
-                
-            });
-        };
-        });
+        placeEnemyShips();
+        startBtn.remove();
+        showPopup('Choose a cell on your opponents boards!', 3000);
+        const enemyCells = document.querySelectorAll('#enemy-board .game-cells');
+        playerFire(enemyCells, enemyGameArr);
     } else {
-        console.log('Nie wszystkie statki umieszczone!');
+        showPopup('Not all ships have been placed!', 3000);
     }
 });
 
