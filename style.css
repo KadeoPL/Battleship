@@ -56,13 +56,13 @@ main {
     font-size: 1.3rem;
 }
 
-.ships-container {
+/*.ships-container {
     display: flex;
     justify-content: center;
     padding: 0 5rem;
     margin-bottom: 2rem;
     margin-top: 5rem;
-}
+}*/
 
 .btn-container {
     display: flex;
@@ -101,13 +101,28 @@ main {
     transition: transform 0.3s ease;
 }
 
+.ships-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    margin: 2rem auto;
+}
+
 .ship {
-    font-size: 1.6rem;
+    display: flex;
+    font-size: 1.2rem;
     color: rgb(255, 255, 255);
     padding: 1rem 2rem;
     background-color: #31506Aff;
     text-transform: uppercase;
-    margin-left: 1rem;
+    margin-left: 30px;
+    text-align: center;
+    height: 50px;
+    justify-content: center;
+    align-items: center;
 }
 
 .ship:first-child {
@@ -159,4 +174,25 @@ main {
 
 .show-popup {
     display: block;
+}
+
+
+#Carrier {
+    aspect-ratio: 5/1;
+}
+
+#Battleship {
+    aspect-ratio: 4/1;
+}
+
+#Cruiser {
+    aspect-ratio: 3/1;
+}
+
+#Submarine {
+    aspect-ratio: 3/1;
+}
+
+#Destroyer {
+    aspect-ratio: 2/1;
 }
