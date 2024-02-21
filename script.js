@@ -276,8 +276,7 @@ function playerFire(cells, gameArr){
             
             hitCounterPlayer++;
             if (hitCounterPlayer === 17) {
-                showPopup('is win', 0);
-                console.log(hitCounterPlayer);
+                endGame('Player');
              }
 
         } else {
