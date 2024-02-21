@@ -271,7 +271,7 @@ function playerFire(cells, gameArr){
             
             hitCounterPlayer++;
             if (hitCounterPlayer === 17) {
-                endGame('Player', 2000);
+                endGame('Player');
              }
 
         } else {
