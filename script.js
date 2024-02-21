@@ -3,7 +3,7 @@ class Ship {
         this.name = name;
         this.size = size;
         this.ship = document.getElementById(this.name);
-        this.placed = false;
+        this.placed = true;
     }
 }
 
@@ -73,6 +73,7 @@ class GameBoard {
 
 const rotateBtn = document.getElementById('rotate-btn');
 const startBtn = document.getElementById('start-btn');
+const restartBtn = document.getElementById('restart-btn');
 const playerBoardGame = document.getElementById('player-board');
 const enemyBoardGame = document.getElementById('enemy-board');
 const rows = 11;
@@ -109,6 +110,29 @@ function flipDirection(button) {
             button.style.setProperty('--before-rotate', '0deg');
         }
     })
+}
+
+function showPopup(message, duration) {
+    const popup = document.getElementById('popup');
+    popup.textContent = message;
+    popup.classList.add('show-popup');
+
+    if (duration != 0) {
+        setTimeout(() => {
+            popup.classList.remove('show-popup');}, duration);
+    } else {
+        const closeButton = document.createElement('button');
+        closeButton.textContent = "Close";
+        popup.appendChild(closeButton);
+        closeButton.addEventListener('click', () => {
+        popup.classList.remove('show-popup');
+    });
+        
+    }
+}
+
+function endGame(winner){
+    showPopup((winner + 'is win'), 0);
 }
 
 function checkAdjacentCell(col, row, size, orientation, gameArr) {
@@ -167,8 +191,7 @@ function enemyFire() {
 
             
             if (hitCounterEnemy === 17) {
-                showPopup("Computer is win!", 4000);
-                return;
+                endGame('Computer');
             }
             enemyFire();
         } else {
@@ -248,9 +271,9 @@ function playerFire(cells, gameArr){
             
             hitCounterPlayer++;
             if (hitCounterPlayer === 17) {
-                showPopup('Player win!', 4000);
-                return;
-            }
+                endGame('Player', 2000);
+             }
+
         } else {
             cellElement.classList.add('hit');
             const dot = document.createElement('div');
@@ -268,14 +291,32 @@ function playerFire(cells, gameArr){
 });
 }
 
-function showPopup(message, duration) {
-    const popup = document.getElementById('popup');
-    popup.textContent = message;
-    popup.classList.add('show-popup');
+function hoverCell(row, col, size, orientation, gameArr, color){
+    if(orientation) {
+        for (let i = 0; i < size; i++) {
+            const nextCol = col + i;
+            if (nextCol > 0 && nextCol <= 10){
+            const cellElement = document.querySelector(`[data-row="${row}"][data-col="${nextCol}"]`);
+            if (!gameArr.getCell(row, nextCol).isOccupied()) {
+                cellElement.style.backgroundColor = color;
+            }
+        }
+        }
+    } else {
+        for (let i = 0; i < size; i++) {
+            const nextRow = row + i;
+            if (nextRow > 0 && nextRow <= 10) {
+                const cellElement = document.querySelector(`[data-row="${nextRow}"][data-col="${col}"]`);
+                if (!gameArr.getCell(nextRow, col).isOccupied()) {
+                    cellElement.style.backgroundColor = color;
+                }
+            }
+        }
+    }
+}
 
-    setTimeout(() => {
-        popup.classList.remove('show-popup');
-    }, duration);
+function restartGame(){
+    window.location.reload();
 }
 
 flipDirection(rotateBtn);
@@ -332,6 +373,21 @@ playerBoardGame.addEventListener('drop', (event) => {
     }
 });
 
+playerBoardGame.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    const rowIdx = parseInt(event.target.getAttribute('data-row'));
+    const colIdx = parseInt(event.target.getAttribute('data-col'));
+    hoverCell(rowIdx, colIdx, draggedShip.size, isHorizontal, playerGameArr, 'rgba(255, 0, 0, 0.5)');
+        
+});
+
+playerBoardGame.addEventListener('dragleave', (event) => {
+    event.preventDefault();
+    const rowIdx = parseInt(event.target.getAttribute('data-row'));
+    const colIdx = parseInt(event.target.getAttribute('data-col'));
+    hoverCell(rowIdx, colIdx, draggedShip.size, isHorizontal, playerGameArr, ' rgba(0, 0, 0, 0.4)');
+});
+
 startBtn.addEventListener('click', () => {
     if(checkStart(shipsArr)){
         placeEnemyShips();
@@ -344,45 +400,8 @@ startBtn.addEventListener('click', () => {
     }
 });
 
-function hoverCell(row, col, size, orientation, gameArr, color){
-    if(orientation) {
-        for (let i = 0; i < size; i++) {
-            const nextCol = col + i;
-            if (nextCol > 0 && nextCol <= 10){
-            const cellElement = document.querySelector(`[data-row="${row}"][data-col="${nextCol}"]`);
-            if (!gameArr.getCell(row, nextCol).isOccupied()) {
-                cellElement.style.backgroundColor = color;
-            }
-        }
-        }
-    } else {
-        for (let i = 0; i < size; i++) {
-            const nextRow = row + i;
-            if (nextRow > 0 && nextRow <= 10) {
-                const cellElement = document.querySelector(`[data-row="${nextRow}"][data-col="${col}"]`);
-                if (!gameArr.getCell(nextRow, col).isOccupied()) {
-                    cellElement.style.backgroundColor = color;
-                }
-            }
-        }
-    }
-}
-
-
-playerBoardGame.addEventListener('dragover', (event) => {
-    event.preventDefault();
-    const rowIdx = parseInt(event.target.getAttribute('data-row'));
-    const colIdx = parseInt(event.target.getAttribute('data-col'));
-    hoverCell(rowIdx, colIdx, draggedShip.size, isHorizontal, playerGameArr, 'rgba(255, 0, 0, 0.5)');
-        
-});
-
-
-playerBoardGame.addEventListener('dragleave', (event) => {
-    event.preventDefault();
-    const rowIdx = parseInt(event.target.getAttribute('data-row'));
-    const colIdx = parseInt(event.target.getAttribute('data-col'));
-    hoverCell(rowIdx, colIdx, draggedShip.size, isHorizontal, playerGameArr, ' rgba(0, 0, 0, 0.4)');
+restartBtn.addEventListener('click', () => {
+    restartGame();
 });
 
 
