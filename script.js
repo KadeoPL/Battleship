@@ -113,19 +113,24 @@ function flipDirection(button) {
 }
 
 function showPopup(message, duration) {
+    
     const popup = document.getElementById('popup');
     popup.textContent = message;
-    popup.classList.add('show-popup');
-
+    //popup.classList.add('show-popup');
+    popup.style.display = 'block';
+    debugger;
     if (duration != 0) {
         setTimeout(() => {
-            popup.classList.remove('show-popup');}, duration);
+            //popup.classList.remove('show-popup');}, duration);
+            popup.style.display = 'none';}, duration);
     } else {
+        
         const closeButton = document.createElement('button');
         closeButton.textContent = "Close";
         popup.appendChild(closeButton);
         closeButton.addEventListener('click', () => {
-        popup.classList.remove('show-popup');
+        //popup.classList.remove('show-popup');
+        popup.style.display = 'none';
     });
         
     }
@@ -263,7 +268,7 @@ function playerFire(cells, gameArr){
         cell.setHit(true);
         
         if(cell.isOccupied()){
-            showPopup('Hit a opponent ship!', 1000);
+            /*showPopup('Hit a opponent ship!', 1000);*/
             cellElement.classList.add('hit');
             const dot = document.createElement('div');
             dot.classList.add('dot-ship');
@@ -271,7 +276,8 @@ function playerFire(cells, gameArr){
             
             hitCounterPlayer++;
             if (hitCounterPlayer === 17) {
-                endGame('Player', 2000);
+                showPopup('is win', 0);
+                console.log(hitCounterPlayer);
              }
 
         } else {
