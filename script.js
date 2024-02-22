@@ -71,6 +71,7 @@ class GameBoard {
     }
 }
 
+const bodyElement = document.body;
 const rotateBtn = document.getElementById('rotate-btn');
 const startBtn = document.getElementById('start-btn');
 const restartBtn = document.getElementById('restart-btn');
@@ -113,31 +114,28 @@ function flipDirection(button) {
 }
 
 function showPopup(message, duration) {
-    
-    const popup = document.getElementById('popup');
+    //debugger;
+    const popup = document.createElement('div');;
     popup.textContent = message;
-    //popup.classList.add('show-popup');
-    popup.style.display = 'block';
-    debugger;
+    popup.classList.add('popup');
+    bodyElement.insertAdjacentElement('beforeend', popup);
+    
     if (duration != 0) {
         setTimeout(() => {
-            //popup.classList.remove('show-popup');}, duration);
-            popup.style.display = 'none';}, duration);
+            popup.remove()}, duration);
     } else {
-        
         const closeButton = document.createElement('button');
         closeButton.textContent = "Close";
         popup.appendChild(closeButton);
         closeButton.addEventListener('click', () => {
-        //popup.classList.remove('show-popup');
-        popup.style.display = 'none';
+            popup.remove();
     });
         
     }
 }
 
 function endGame(winner){
-    showPopup((winner + 'is win'), 0);
+    showPopup((winner + ' is win'), 0);
 }
 
 function checkAdjacentCell(col, row, size, orientation, gameArr) {
@@ -187,28 +185,35 @@ function enemyFire() {
     } else {
         cell.setHit(true);
         if(cell.isOccupied()){
-            cellElement.classList.add('hit');
-            const dot = document.createElement('div');
-            dot.classList.add('dot-ship');
-            cellElement.appendChild(dot);
-            
+            markCellAsHitShip(cellElement);
             hitCounterEnemy++;
 
-            
             if (hitCounterEnemy === 17) {
                 endGame('Computer');
             }
             enemyFire();
         } else {
-            cellElement.classList.add('hit');
-            const dot = document.createElement('div');
-            dot.classList.add('dot');
-            cellElement.appendChild(dot);
-            cellElement.classList.remove('game-cells');
+            markCellAsHit(cellElement);
         }
     }
 
 }
+
+function markCellAsHit(cell) {
+    cell.classList.add('hit');
+    const dot = document.createElement('div');
+    dot.classList.add('dot');
+    cell.appendChild(dot);
+    cell.classList.remove('game-cells');
+}
+
+function markCellAsHitShip(cell) {
+    cell.classList.add('hit');
+    const dot = document.createElement('div');
+    dot.classList.add('dot-ship');
+    cell.appendChild(dot);
+}
+
 
 function placeEnemyShips() {
     enemyShipsArr.forEach(ship => {
@@ -268,23 +273,18 @@ function playerFire(cells, gameArr){
         cell.setHit(true);
         
         if(cell.isOccupied()){
-            /*showPopup('Hit a opponent ship!', 1000);*/
-            cellElement.classList.add('hit');
-            const dot = document.createElement('div');
-            dot.classList.add('dot-ship');
-            cellElement.appendChild(dot);
-            
+            markCellAsHitShip(cellElement);
+            showPopup('Hit a opponent ship!', 500);
+           
             hitCounterPlayer++;
             if (hitCounterPlayer === 17) {
                 endGame('Player');
-             }
+             } /*else {
+                showPopup('Hit a opponent ship!', 500);
+             }*/
 
         } else {
-            cellElement.classList.add('hit');
-            const dot = document.createElement('div');
-            dot.classList.add('dot');
-            cellElement.appendChild(dot);
-            cellElement.classList.remove('game-cells');
+            markCellAsHit(cellElement);
             enemyFire();
         }
         

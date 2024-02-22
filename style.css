@@ -166,7 +166,7 @@ main {
     background-color: rgb(207, 46, 46);
     padding: 20px;
     z-index: 1000;
-    display: none;
+    display: block;
     color: white;
     font-size: 2rem;
     text-align: center;
