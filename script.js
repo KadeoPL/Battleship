@@ -3,7 +3,7 @@ class Ship {
         this.name = name;
         this.size = size;
         this.ship = document.getElementById(this.name);
-        this.placed = true;
+        this.placed = false;
     }
 }
 
@@ -83,6 +83,7 @@ let isHorizontal = true;
 let draggedShip;
 let hitCounterEnemy = 0;
 let hitCounterPlayer = 0;
+let gameActive = true;
 
 const carrier = new Ship('Carrier', 5);
 const battleship = new Ship('Battleship', 4);
@@ -125,7 +126,8 @@ function showPopup(message, duration) {
             popup.remove()}, duration);
     } else {
         const closeButton = document.createElement('button');
-        closeButton.textContent = "Close";
+        closeButton.textContent = '×';
+        closeButton.classList.add('close-button');
         popup.appendChild(closeButton);
         closeButton.addEventListener('click', () => {
             popup.remove();
@@ -136,6 +138,7 @@ function showPopup(message, duration) {
 
 function endGame(winner){
     showPopup((winner + ' is win'), 0);
+    gameActive = false;
 }
 
 function checkAdjacentCell(col, row, size, orientation, gameArr) {
@@ -185,7 +188,7 @@ function enemyFire() {
     } else {
         cell.setHit(true);
         if(cell.isOccupied()){
-            markCellAsHitShip(cellElement);
+            markCellAsHit(cellElement, true);
             hitCounterEnemy++;
 
             if (hitCounterEnemy === 17) {
@@ -193,27 +196,25 @@ function enemyFire() {
             }
             enemyFire();
         } else {
-            markCellAsHit(cellElement);
+            markCellAsHit(cellElement, false);
         }
     }
 
 }
 
-function markCellAsHit(cell) {
+function markCellAsHit(cell, isShipHit) {
     cell.classList.add('hit');
     const dot = document.createElement('div');
-    dot.classList.add('dot');
-    cell.appendChild(dot);
-    cell.classList.remove('game-cells');
-}
 
-function markCellAsHitShip(cell) {
-    cell.classList.add('hit');
-    const dot = document.createElement('div');
-    dot.classList.add('dot-ship');
-    cell.appendChild(dot);
+    if(isShipHit) {
+        dot.classList.add('dot-ship');
+        cell.appendChild(dot);
+    } else {
+        dot.classList.add('dot');
+        cell.appendChild(dot);
+        cell.classList.remove('game-cells');
+    }
 }
-
 
 function placeEnemyShips() {
     enemyShipsArr.forEach(ship => {
@@ -261,40 +262,40 @@ function checkStart(shipsArr) {
     }
 }
 
-function playerFire(cells, gameArr){
+function playerFire(cells, gameArr) {
     cells.forEach(cellElement => {
- 
-    cellElement.addEventListener('click', () => {
-    const rowIdx = parseInt(cellElement.getAttribute('data-row'));
-    const colIdx = parseInt(cellElement.getAttribute('data-col'));
-    const cell = gameArr.getCell(rowIdx, colIdx);
 
-    if(!cell.hit){
-        cell.setHit(true);
-        
-        if(cell.isOccupied()){
-            markCellAsHitShip(cellElement);
-            showPopup('Hit a opponent ship!', 500);
-           
-            hitCounterPlayer++;
-            if (hitCounterPlayer === 17) {
-                endGame('Player');
-             } /*else {
-                showPopup('Hit a opponent ship!', 500);
-             }*/
+        cellElement.addEventListener('click', () => {
+            if (!gameActive) return;
 
-        } else {
-            markCellAsHit(cellElement);
-            enemyFire();
-        }
-        
-    } else {
-        console.log('Tutaj już strzelano!');
-    }
-    
-});
-});
+            const rowIdx = parseInt(cellElement.getAttribute('data-row'));
+            const colIdx = parseInt(cellElement.getAttribute('data-col'));
+            const cell = gameArr.getCell(rowIdx, colIdx);
+
+            if (!cell.isHit()) {
+                cell.setHit(true);
+
+                if (cell.isOccupied()) {
+                    markCellAsHit(cellElement, true);
+                    hitCounterPlayer++;
+
+                    if (hitCounterPlayer === 17) {
+                        endGame('Player');
+                    } else {
+                        showPopup('Hit an opponent ship!', 500);
+                    }
+
+                } else {
+                    markCellAsHit(cellElement, false);
+                    enemyFire();
+                }
+            } else {
+                showPopup('You\'ve already shot here.', 500);
+            }
+        });
+    });
 }
+
 
 function hoverCell(row, col, size, orientation, gameArr, color){
     if(orientation) {
@@ -397,7 +398,6 @@ startBtn.addEventListener('click', () => {
     if(checkStart(shipsArr)){
         placeEnemyShips();
         startBtn.remove();
-        showPopup('Choose a cell on your opponents boards!', 3000);
         const enemyCells = document.querySelectorAll('#enemy-board .game-cells');
         playerFire(enemyCells, enemyGameArr);
     } else {
