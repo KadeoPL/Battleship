@@ -5,14 +5,23 @@ class Ship {
         this.ship = document.getElementById(this.name);
         this.placed = false;
         this.hitCounter = 0;
+        this.shipCells = [];
     }
 
     isShipSunk() {
-        (this.size === this.hitCounter) ? true : false;
+        if (this.size === this.hitCounter){
+            return true;
+        } else {
+            return false
+        }
     }
 
     hitShip(){
         this.hitCounter++;
+    }
+
+    addCells(cell){
+        this.shipCells.push(cell);
     }
 }
 
@@ -22,7 +31,7 @@ class Cell {
         this.col = col;
         this.occupied = false;
         this.hit = false;
-        this.element = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        this.element;
         this.placedShipName = '';
     }
 
@@ -48,6 +57,10 @@ class Cell {
 
     getPlacedShipName(){
         return this.placedShipName;
+    }
+
+    getElement(board){
+        this.element = board.querySelector(`[data-row="${this.row}"][data-col="${this.col}"]`);
     }
 }
 
@@ -303,13 +316,17 @@ function playerFire(cells, gameArr) {
                     } else {
                         let hitShipName = cell.getPlacedShipName();
                         showPopup('Trafino ' + hitShipName, 500);
-
+                        
                         enemyShipsArr.forEach(ship => {
                             if (ship.name === hitShipName){
                                 ship.hitShip();
-                                console.log(ship.hitCounter);
-                                if(ship.isShipSunk) {
+                                ship.addCells(cell);
+                                if(ship.isShipSunk()) {
                                     showPopup('Statek ' + hitShipName + ' zostal zatopiony', 0);
+                                    console.log(ship.shipCells);
+                                    ship.shipCells.forEach(sunkCell => {
+                                        sunkCell.getElement(enemyBoardGame);
+                                        sunkCell.element.style.backgroundColor = 'rgb(207, 46, 46, 0.5)';                                    })
                                 }
                             }
                         });
