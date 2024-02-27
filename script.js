@@ -9,11 +9,7 @@ class Ship {
     }
 
     isShipSunk() {
-        if (this.size === this.hitCounter){
-            return true;
-        } else {
-            return false
-        }
+        return this.size === this.hitCounter;
     }
 
     hitShip(){
