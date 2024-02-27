@@ -230,7 +230,6 @@ function placeEnemyShips() {
                         const nextCol = colIdx + i;
                         const cell = enemyGameArr.getCell(rowIdx, nextCol);
                         const cellElement = enemyBoardGame.querySelector(`[data-row="${rowIdx}"][data-col="${nextCol}"]`);
-                        cellElement.style.backgroundColor = '#FFFFFF';
                         cell.setOccupied(true);
                     }
                     isPlaced = true;
@@ -241,7 +240,6 @@ function placeEnemyShips() {
                         const nextRow = rowIdx + i;
                         const cell = enemyGameArr.getCell(nextRow, colIdx);
                         const cellElement = enemyBoardGame.querySelector(`[data-row="${nextRow}"][data-col="${colIdx}"]`);
-                        cellElement.style.backgroundColor = '#FFFFFF';
                         cell.setOccupied(true);
                     }
                     isPlaced = true;
