@@ -4,6 +4,15 @@ class Ship {
         this.size = size;
         this.ship = document.getElementById(this.name);
         this.placed = false;
+        this.hitCounter = 0;
+    }
+
+    isShipSunk() {
+        (this.size === this.hitCounter) ? true : false;
+    }
+
+    hitShip(){
+        this.hitCounter++;
     }
 }
 
@@ -14,6 +23,7 @@ class Cell {
         this.occupied = false;
         this.hit = false;
         this.element = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        this.placedShipName = '';
     }
 
     isOccupied() {
@@ -30,6 +40,14 @@ class Cell {
 
     setHit(value){
         this.hit = value;
+    }
+
+    setShipName(value){
+        this.placedShipName = value;
+    }
+
+    getPlacedShipName(){
+        return this.placedShipName;
     }
 }
 
@@ -229,8 +247,9 @@ function placeEnemyShips() {
                     for (let i = 0; i < ship.size; i++) {
                         const nextCol = colIdx + i;
                         const cell = enemyGameArr.getCell(rowIdx, nextCol);
-                        const cellElement = enemyBoardGame.querySelector(`[data-row="${rowIdx}"][data-col="${nextCol}"]`);
+                        //const cellElement = enemyBoardGame.querySelector(`[data-row="${rowIdx}"][data-col="${nextCol}"]`);
                         cell.setOccupied(true);
+                        cell.setShipName(ship.name);
                     }
                     isPlaced = true;
                 }
@@ -239,8 +258,9 @@ function placeEnemyShips() {
                     for (let i = 0; i < ship.size; i++) {
                         const nextRow = rowIdx + i;
                         const cell = enemyGameArr.getCell(nextRow, colIdx);
-                        const cellElement = enemyBoardGame.querySelector(`[data-row="${nextRow}"][data-col="${colIdx}"]`);
+                        //const cellElement = enemyBoardGame.querySelector(`[data-row="${nextRow}"][data-col="${colIdx}"]`);
                         cell.setOccupied(true);
+                        cell.setShipName(ship.name);
                     }
                     isPlaced = true;
                 }
@@ -277,10 +297,22 @@ function playerFire(cells, gameArr) {
                     markCellAsHit(cellElement, true);
                     hitCounterPlayer++;
 
+
                     if (hitCounterPlayer === 17) {
                         endGame('Player');
                     } else {
-                        showPopup('Hit an opponent ship!', 500);
+                        let hitShipName = cell.getPlacedShipName();
+                        showPopup('Trafino ' + hitShipName, 500);
+
+                        enemyShipsArr.forEach(ship => {
+                            if (ship.name === hitShipName){
+                                ship.hitShip();
+                                console.log(ship.hitCounter);
+                                if(ship.isShipSunk) {
+                                    showPopup('Statek ' + hitShipName + ' zostal zatopiony', 0);
+                                }
+                            }
+                        });
                     }
 
                 } else {
