@@ -315,15 +315,14 @@ function playerFire(cells, gameArr) {
                         endGame('Player');
                     } else {
                         let hitShipName = cell.getPlacedShipName();
-                        showPopup('Trafino ' + hitShipName, 500);
+                        showPopup('Hit ' + hitShipName, 500);
                         
                         enemyShipsArr.forEach(ship => {
                             if (ship.name === hitShipName){
                                 ship.hitShip();
                                 ship.addCells(cell);
                                 if(ship.isShipSunk()) {
-                                    showPopup('Statek ' + hitShipName + ' zostal zatopiony', 0);
-                                    console.log(ship.shipCells);
+                                    showPopup(hitShipName + ' was sunk', 500);
                                     ship.shipCells.forEach(sunkCell => {
                                         sunkCell.getElement(enemyBoardGame);
                                         sunkCell.element.style.backgroundColor = 'rgb(207, 46, 46, 0.5)';                                    })
