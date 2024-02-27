@@ -70,8 +70,8 @@ function endGame(winner){
     gameActive = false;
 }
 
-function checkAdjacentCell(col, row, size, orientation, gameArr) {
-
+function checkAdjacentCell(params) {
+    const { col, row, size, orientation, gameArr } = params;
     if (orientation) {
     for (let i = -1; i <= 1 ; i++) {
         for (let j = -1; j < size+1; j++) {
@@ -241,7 +241,9 @@ function playerFire(cells, gameArr) {
 }
 
 
-function hoverCell(row, col, size, orientation, gameArr, color){
+function hoverCell(params){
+    const { row, col, size, orientation, gameArr, color } = params;
+    
     if(orientation) {
         for (let i = 0; i < size; i++) {
             const nextCol = col + i;
@@ -269,6 +271,29 @@ function restartGame(){
     window.location.reload();
 }
 
+function handleHoverEvent(event, color) {
+    event.preventDefault();
+    const rowIdx = parseInt(event.target.getAttribute('data-row'));
+    const colIdx = parseInt(event.target.getAttribute('data-col'));
+    const hoverCellParams = {
+        col: colIdx,
+        row: rowIdx,
+        size: draggedShip.size,
+        orientation: isHorizontal,
+        gameArr: playerGameArr,
+        color: color
+    };
+    hoverCell(hoverCellParams);
+}
+
+function setCellOccupied(cell, cellElement, ship){
+    cell.setOccupied(true);
+    cellElement.style.backgroundColor = '#8A9FB1ff';
+    ship.ship.style.display = 'none';
+    ship.placed = true;
+    checkStart(shipsArr); 
+}
+
 flipDirection(rotateBtn);
 
 shipsArr.forEach(shipName => {
@@ -286,56 +311,48 @@ playerBoardGame.addEventListener('drop', (event) => {
 
     const rowIdx = parseInt(event.target.getAttribute('data-row'));
     const colIdx = parseInt(event.target.getAttribute('data-col'));
+    const params = {
+        col: colIdx,
+        row: rowIdx,
+        size: draggedShip.size,
+        orientation: isHorizontal,
+        gameArr: playerGameArr,
+        color: 'rgba(0, 0, 0, 0.4)'
+    };
+
     if (isHorizontal) {
-        if ((colIdx + draggedShip.size) <= 11 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size, isHorizontal, playerGameArr)) {
+        if ((colIdx + draggedShip.size) <= 11 && checkAdjacentCell(params)) {
             for (let i = 0; i < draggedShip.size; i++) {
                 const nextCol = colIdx + i;
                 const cell = playerGameArr.getCell(rowIdx, nextCol);
                 const cellElement = document.querySelector(`[data-row="${rowIdx}"][data-col="${nextCol}"]`);
-                
-                cell.setOccupied(true);
-                cellElement.style.backgroundColor = '#8A9FB1ff';
-                draggedShip.ship.style.display = 'none';
-                draggedShip.placed = true;
-                checkStart(shipsArr);
+                setCellOccupied(cell, cellElement, draggedShip);
             }
         } else {
             showPopup("The ship does not fit on the board or the adjacent spaces are occupied!", 2000);
-            hoverCell(rowIdx, colIdx, draggedShip.size, isHorizontal, playerGameArr, ' rgba(0, 0, 0, 0.4)');
+            hoverCell(params);
         }
     } else {
-        if ((rowIdx + draggedShip.size) <= 11 && checkAdjacentCell(colIdx, rowIdx, draggedShip.size, isHorizontal, playerGameArr)) {
+        if ((rowIdx + draggedShip.size) <= 11 && checkAdjacentCell(params)) {
             for (let i = 0; i < draggedShip.size; i++) {
                 const nextRow = rowIdx + i;
                 const cell = playerGameArr.getCell(nextRow, colIdx);
                 const cellElement = document.querySelector(`[data-row="${nextRow}"][data-col="${colIdx}"]`);
-                
-                cell.setOccupied(true);
-                cellElement.style.backgroundColor = '#8A9FB1ff';
-                draggedShip.ship.style.display = 'none';
-                draggedShip.placed = true;
-                checkStart(shipsArr);
+                setCellOccupied(cell, cellElement, draggedShip);
             }
         } else {
             showPopup("The ship does not fit on the board or the adjacent spaces are occupied!", 2000);
-            hoverCell(rowIdx, colIdx, draggedShip.size, isHorizontal, playerGameArr, ' rgba(0, 0, 0, 0.4)');
+            hoverCell(params);
         }
     }
 });
 
 playerBoardGame.addEventListener('dragover', (event) => {
-    event.preventDefault();
-    const rowIdx = parseInt(event.target.getAttribute('data-row'));
-    const colIdx = parseInt(event.target.getAttribute('data-col'));
-    hoverCell(rowIdx, colIdx, draggedShip.size, isHorizontal, playerGameArr, 'rgba(255, 0, 0, 0.5)');
-        
+    handleHoverEvent(event, 'rgba(255, 0, 0, 0.5)');
 });
 
 playerBoardGame.addEventListener('dragleave', (event) => {
-    event.preventDefault();
-    const rowIdx = parseInt(event.target.getAttribute('data-row'));
-    const colIdx = parseInt(event.target.getAttribute('data-col'));
-    hoverCell(rowIdx, colIdx, draggedShip.size, isHorizontal, playerGameArr, ' rgba(0, 0, 0, 0.4)');
+    handleHoverEvent(event, 'rgba(0, 0, 0, 0.4)');
 });
 
 startBtn.addEventListener('click', () => {
