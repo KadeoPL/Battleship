@@ -152,24 +152,29 @@ function placeEnemyShips() {
             const isHorizontal = Math.random() < 0.5;
             const rowIdx = 1 + Math.floor(Math.random() * 10);
             const colIdx = 1 + Math.floor(Math.random() * 10);
+            const paramsPlaceEnemyShip = {
+                col: colIdx,
+                row: rowIdx,
+                size: ship.size,
+                orientation: isHorizontal,
+                gameArr: enemyGameArr
+            }
 
             if (isHorizontal) {
-                if (colIdx + ship.size <= 10 && checkAdjacentCell(colIdx, rowIdx, ship.size, isHorizontal, enemyGameArr)) {
+                if (colIdx + ship.size <= 10 && checkAdjacentCell(paramsPlaceEnemyShip)) {
                     for (let i = 0; i < ship.size; i++) {
                         const nextCol = colIdx + i;
                         const cell = enemyGameArr.getCell(rowIdx, nextCol);
-                        //const cellElement = enemyBoardGame.querySelector(`[data-row="${rowIdx}"][data-col="${nextCol}"]`);
                         cell.setOccupied(true);
                         cell.setShipName(ship.name);
                     }
                     isPlaced = true;
                 }
             } else {
-                if (rowIdx + ship.size <= 10 && checkAdjacentCell(colIdx, rowIdx, ship.size, isHorizontal, enemyGameArr)) {
+                if (rowIdx + ship.size <= 10 && checkAdjacentCell(paramsPlaceEnemyShip)) {
                     for (let i = 0; i < ship.size; i++) {
                         const nextRow = rowIdx + i;
                         const cell = enemyGameArr.getCell(nextRow, colIdx);
-                        //const cellElement = enemyBoardGame.querySelector(`[data-row="${nextRow}"][data-col="${colIdx}"]`);
                         cell.setOccupied(true);
                         cell.setShipName(ship.name);
                     }
@@ -239,7 +244,6 @@ function playerFire(cells, gameArr) {
         });
     });
 }
-
 
 function hoverCell(params){
     const { row, col, size, orientation, gameArr, color } = params;
