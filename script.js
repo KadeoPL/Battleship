@@ -190,6 +190,7 @@ function checkStart(shipsArr) {
 
     if (allShipsPlaced) {
         startBtn.style.background = 'red';
+        startBtn.classList.add('animate__animated', 'animate__bounce');
         return true;
     } else {
         return false;
