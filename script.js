@@ -294,6 +294,7 @@ function handleHoverEvent(event, color) {
 function setCellOccupied(cell, cellElement, ship){
     cell.setOccupied(true);
     cellElement.style.backgroundColor = '#8A9FB1ff';
+    cellElement.classList.add('animate__animated', 'animate__jello');
     ship.ship.style.display = 'none';
     ship.placed = true;
     checkStart(shipsArr); 
